@@ -48,14 +48,14 @@ def visualize_cube_and_points(points, normals, centroids):
         [3, 7],
     ]
     cube_vertices = [
-        [1, 1, 1],
-        [1, 1, -1],
-        [1, -1, -1],
-        [1, -1, 1],
-        [-1, 1, 1],
-        [-1, 1, -1],
-        [-1, -1, -1],
-        [-1, -1, 1],
+        [-0.5, -0.5, -0.5],
+        [-0.5, -0.5, 0.5],
+        [-0.5, 0.5, -0.5],
+        [-0.5, 0.5, 0.5],
+        [0.5, -0.5, -0.5],
+        [0.5, -0.5, 0.5],
+        [0.5, 0.5, -0.5],
+        [0.5, 0.5, 0.5],
     ]
     cube_lines_set = []
     for vertices in cube_lines:
@@ -80,25 +80,6 @@ def visualize_cube_and_points(points, normals, centroids):
 
     # Visualize
     o3d.visualization.draw_geometries([pcd, cube_line_set, normal_line_set])
-
-
-def rotate_points(points: np.ndarray, angle_degrees: float) -> np.ndarray:
-    # Convert angle from degrees to radians
-    angle_radians = np.radians(angle_degrees)
-
-    # Define the rotation matrix around the z-axis
-    rotation_matrix = np.array(
-        [
-            [np.cos(angle_radians), -np.sin(angle_radians), 0],
-            [np.sin(angle_radians), np.cos(angle_radians), 0],
-            [0, 0, 1],
-        ]
-    )
-
-    # Apply the rotation to each point
-    rotated_points = np.dot(points, rotation_matrix.T)
-
-    return rotated_points
 
 
 def generate_points_on_cube_surface(num_points_per_face):
@@ -295,7 +276,7 @@ def main() -> None:
         points = [world_T_lidar * point for point in vals["points"]]
         if i % 5 == 0:
             visualize_cube_and_points(
-                vals["points"],
+                points,
                 vals["normals"],
                 vals["centroids"],
             )
