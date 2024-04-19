@@ -28,6 +28,14 @@ python3 visualize.py
 This will also visualize the optimization using Open3D
 ![Alt Text](assets/animation.gif)
 
+### Generating C++ code
+
+Symforce is a libray that autogenerates highly optimized code in C++. To autogenerate the C++ functions for the point-to-plane residual and the linearization function which includes the Hessian and Jacobian, you can run
+
+```bash
+python3 generate.py
+```
+
 ### Run C++
 
 To run C++ code, you need to compile the project
