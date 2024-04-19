@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 import symforce
 
-symforce.set_epsilon_to_symbol()
+# symforce.set_epsilon_to_symbol()
 import numpy as np
 import sym
 from symforce import typing as T
@@ -11,7 +11,6 @@ from symforce.values import Values
 from symforce.opt.factor import Factor
 from symforce.opt.optimizer import Optimizer
 from symforce.opt.factor import visualize_factors
-from symforce.opt.noise_models import IsotropicNoiseModel
 import open3d as o3d
 import symforce.symbolic as sf
 from symforce import logger
@@ -234,20 +233,6 @@ def build_factors(num_correspondences: int) -> T.Iterator[Factor]:
         )
 
 
-def build_residual(num_correspondences, values: Values) -> sf.Matrix:
-    residuals: T.List[sf.Matrix] = []
-    for i in range(num_correspondences):
-        residuals.append(
-            point_to_plane_residual(
-                values.attr.world_T_lidar,
-                values.attr.points[i],
-                values.attr.centroids[i],
-                values.attr.normals[i],
-            )
-        )
-    return sf.Matrix.block_matrix([[residual] for residual in residuals])
-
-
 def main() -> None:
     num_poses = 1
     num_points_per_face = 100
@@ -290,4 +275,5 @@ def main() -> None:
     print(f"Status: {result.status}")
 
 
-main()
+if __name__ == "__main__":
+    main()

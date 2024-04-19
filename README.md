@@ -10,7 +10,7 @@ This project implements the point-to-plane ICP algorithm using the symforce libr
 
 ### Residual
 
-The residual function used in this implementation computes the difference between the estimated plane and the corresponding points in the point cloud.
+The residual function computes the difference between points and their estimated plane correspondences in the point cloud using the centroid and normal of the plane. As long as the centroid/point correspondence is on the plane, it does not actually matter which point you choose.
 
 ## Install
 
