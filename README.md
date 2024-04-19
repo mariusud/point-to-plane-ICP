@@ -14,14 +14,38 @@ The residual function computes the difference between points and their estimated
 
 ## Install
 
-To install the required dependencies, use the following command:
+This repo has code for visualizing and running point-to-plane ICP using symforce in both Python and C++
+
+### Run Python
+
+To visualize the point-to-plane ICP optimization on a simple cube in python, you can run:
 
 ```bash
 pip install -r requirements.txt
+python3 visualize.py
 ```
 
-then you can simply run with
+This will also visualize the optimization using Open3D
+
+### Run C++
+
+To run C++ code, you need to compile the project
 
 ```bash
-python3 generate_fixed.py
+mkdir build
+cd build
+cmake ..
+make
+./run_dynamic_size
 ```
+
+### Installing Symforce
+
+To install symforce, follow the official [installation guide](https://github.com/symforce-org/symforce?tab=readme-ov-file#build-with-cmake)
+and remember to run the following to use symforce in another CMake project
+
+```bash
+make install
+```
+
+The CMake files will automatically find symforce, Eigen, FMT and spdlog for you, and are taken from https://github.com/gcross-zipline/find_symforce_example

@@ -3,7 +3,6 @@
 # -----------------------------------------------------------------------------
 import symforce
 
-# symforce.set_epsilon_to_symbol()
 import numpy as np
 import sym
 from symforce import typing as T
@@ -33,9 +32,9 @@ def visualize_factor_graph(factors, num_factors_to_visualize):
     dot_graph.render("factor_graph", format="png", cleanup=True)
 
 
-def visualize(values, values_per_iter, save_image=True):
+def visualize(values, values_per_iter, save_image=False):
     vis = o3d.visualization.Visualizer()
-    vis.create_window("Point-to-plane ICP", width=640, height=480)
+    vis.create_window("Point-to-plane ICP", width=1080, height=1080)
     for i, vals in enumerate(values_per_iter):
         if i == 0:
             cube_line_set, normal_line_set = create_cube(
@@ -276,4 +275,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # symforce.set_epsilon_to_symbol()
     main()
