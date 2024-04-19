@@ -60,4 +60,16 @@ int main()
     {
         spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(i)));
     }
+
+    const auto &iteration_stats = stats.iterations;
+    const auto &first_iter = iteration_stats.front();
+    const auto &last_iter = iteration_stats.back();
+
+    const auto &best_iter = iteration_stats[stats.best_index];
+
+    spdlog::info("Iterations: {}", last_iter.iteration);
+    spdlog::info("Lambda: {}", last_iter.current_lambda);
+    spdlog::info("Initial error: {}", first_iter.new_error);
+    spdlog::info("Final error: {}", best_iter.new_error);
+    spdlog::info("Status: {}", stats.status);
 }
