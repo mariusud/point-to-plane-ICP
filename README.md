@@ -1,4 +1,4 @@
-# point-to-plane-ICP
+# Point-to-plane ICP
 
 Implementation of point-to-plane Iterative Closest Point (ICP) using symforce.
 
