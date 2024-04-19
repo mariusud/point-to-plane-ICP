@@ -9,6 +9,7 @@
 
 #include "../gen/keys.h"
 #include "../gen/point_to_plane_factor.h"
+#include "./common.h"
 
 template <typename Scalar>
 sym::Factor<Scalar> CreatePointToPlaneFactor(const int i)
@@ -37,12 +38,13 @@ int main()
 {
     spdlog::info("Test");
 
-    auto values = BuildValues<double>();
+    auto values = build_cube_values<double>();
+    spdlog::info("Initial values: {}", values);
 
     int num_poses = 10;
 
     const std::vector<sym::Factor<double>> factors = BuildDynamicFactors<double>(num_poses);
-
+    // exit(0);
     sym::Optimizer<double> optimizer(sym::DefaultOptimizerParams(), factors,
                                      "Point-To-PlaneOptimizerDynamic");
 
@@ -53,6 +55,6 @@ int main()
     spdlog::info("Optimized State:");
     for (int i = 0; i < num_poses; i++)
     {
-        spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>(sym::Keys::WORLD_T_BODY.WithSuper(i)));
+        spdlog::info("Pose {}: {}", i, values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(i)));
     }
 }
