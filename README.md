@@ -2,13 +2,13 @@
 
 Implementation of point-to-plane Iterative Closest Point (ICP) using symforce.
 
-![Alt Text](assets/animation.gif)
-
 ## Problem Description
 
 This project implements the point-to-plane ICP algorithm using the symforce library. The ICP algorithm is commonly used for aligning two point clouds by minimizing the distance between corresponding points and their corresponding point, line or plane correspodences.
 
 ### Residual
+
+![Alt Text](assets/factor_graph.png)
 
 The residual function computes the difference between points and their estimated plane correspondences in the point cloud using the centroid and normal of the plane. As long as the centroid/point correspondence is on the plane, it does not actually matter which point you choose.
 
@@ -26,6 +26,7 @@ python3 visualize.py
 ```
 
 This will also visualize the optimization using Open3D
+![Alt Text](assets/animation.gif)
 
 ### Run C++
 
