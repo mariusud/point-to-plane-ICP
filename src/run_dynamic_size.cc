@@ -38,17 +38,20 @@ int main()
 {
     spdlog::info("Test");
 
-    auto values = build_cube_values<double>();
+    int kNumPointsPerFace = 1000;
+    auto values = build_cube_values<double>(kNumPointsPerFace);
     spdlog::info("Initial values: {}", values);
 
-    int num_poses = 10;
+    int num_poses = 1;
 
     const std::vector<sym::Factor<double>> factors = BuildDynamicFactors<double>(num_poses);
+    spdlog::info("factors: {}", factors);
     // exit(0);
     sym::Optimizer<double> optimizer(sym::DefaultOptimizerParams(), factors,
                                      "Point-To-PlaneOptimizerDynamic");
 
     // Optimize
+    spdlog::info("Optimizing...");
     const sym::Optimizerd::Stats stats = optimizer.Optimize(values);
 
     // Print out results

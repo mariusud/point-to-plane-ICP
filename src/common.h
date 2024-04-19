@@ -9,11 +9,9 @@
 #include "../gen/keys.h"
 
 template <typename Scalar>
-inline sym::Values<Scalar> build_cube_values()
+inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
 {
     sym::Values<Scalar> values;
-
-    int kNumPointsPerFace = 10;
 
     // Define cube vertices
     std::vector<Eigen::Vector3d> cube_vertices = {
@@ -73,7 +71,20 @@ inline sym::Values<Scalar> build_cube_values()
 
     // Set initial pose
     sym::Pose3d initial_pose;
-    values.Set(sym::Keys::WORLD_T_LIDAR, sym::Pose3<Scalar>(initial_pose));
+    double t = 40;
+
+    // Calculate tangent vector components
+    Eigen::Matrix<Scalar, 6, 1> tangent_vec;
+    tangent_vec << -1 * t,
+        -2 * t,
+        -3 * t,
+        8 * std::sin(t * M_PI / 1.3),
+        9 * std::sin(t * M_PI / 2),
+        5 * std::sin(t * M_PI / 1.8);
+
+    // Create the pose from the tangent vector
+    sym::Pose3<Scalar> world_T_lidar = sym::Pose3<Scalar>::FromTangent(tangent_vec);
+    values.Set(sym::Keys::WORLD_T_LIDAR.WithSuper(0), world_T_lidar);
 
     // Set epsilon
     values.Set(sym::Keys::EPSILON, sym::kDefaultEpsilon<Scalar>);
