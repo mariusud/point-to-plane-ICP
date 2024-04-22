@@ -208,13 +208,16 @@ def build_cube_values(num_points_per_face) -> T.Tuple[Values, int]:
 
 
 def point_to_plane_residual(
-    world_T_lidar: sf.Pose3, point: sf.V3, centroid: sf.V3, normal: sf.V3
+    world_T_lidar: sf.Pose3,
+    point_lidar: sf.V3,
+    centroid_world: sf.V3,
+    normal_world: sf.V3,
 ) -> sf.V3:
 
-    estimated_position = world_T_lidar * point
-    v = estimated_position - centroid
+    estimated_position = world_T_lidar * point_lidar
+    v = estimated_position - centroid_world
 
-    d_pred = normal.T * v
+    d_pred = normal_world.T * v
 
     return d_pred
 

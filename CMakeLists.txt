@@ -25,6 +25,9 @@ find_package(Eigen REQUIRED)
 find_package(Symforce REQUIRED)
 
 
+# Find installed Open3D, which exports Open3D::Open3D
+# find_package(Open3D REQUIRED)
+
 
 # Add the executable target
 add_executable(run_dynamic_size src/run_dynamic_size.cc)
@@ -51,5 +54,32 @@ target_link_libraries(
     symforce::opt
 )
 
+
+add_executable(run_fixed_size src/run_fixed_size.cc)
+
+# Add dependencies
+add_dependencies(
+    run_fixed_size
+    Eigen::Eigen
+    fmt::fmt
+    spdlog::spdlog
+    symforce::gen
+    symforce::cholesky
+    symforce::opt
+)
+
+# Link libraries
+target_link_libraries(
+    run_fixed_size
+    Eigen::Eigen
+    fmt::fmt
+    spdlog::spdlog
+    symforce::gen
+    symforce::cholesky
+    symforce::opt
+)
+
+
 # Install target
 install(TARGETS run_dynamic_size DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS run_fixed_size DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

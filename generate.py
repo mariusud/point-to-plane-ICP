@@ -2,7 +2,9 @@ import symforce
 
 symforce.set_epsilon_to_symbol()
 
+
 from pathlib import Path
+import symforce.symbolic as sf
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig
@@ -19,8 +21,6 @@ from symforce.values import Values
 import re
 import shutil
 import textwrap
-
-import symforce.symbolic as sf
 
 
 def build_residual(num_correspondences, values: Values) -> sf.Matrix:
@@ -49,7 +49,6 @@ def build_codegen_object(
     values = build_cube_values(num_points_per_face)
 
     def symbolic(k: str, v: T.Any) -> T.Any:
-        print(v, type(v))
         if isinstance(v, sym.Pose3):
             return sf.Pose3.symbolic(k)
         elif isinstance(v, float):
@@ -64,8 +63,7 @@ def build_codegen_object(
 
     values = Values(**{key: symbolic(key, v) for key, v in values.items_recursive()})
 
-    print("vals: ", values)
-    NUM_CORRESPONDENCES = len(values.attr.points)
+    NUM_CORRESPONDENCES = num_points_per_face * 6
 
     print("NUM_CORRESPONDENCES: ", NUM_CORRESPONDENCES)
 
@@ -79,9 +77,6 @@ def build_codegen_object(
     outputs = Values(residual=residual)
 
     optimized_keys = [f"world_T_lidar"]
-
-    print("outputs: ,", outputs)
-    print("inputs: ,", inputs)
 
     linearization_func = Codegen(
         inputs=inputs,
@@ -127,7 +122,9 @@ def generate_point_to_plane_residual_code(
 
     # Generate the function and print the code
     generated_paths = codegen_with_linearization.generate_function(
-        output_dir=output_dir, skip_directory_nesting=True
+        output_dir=output_dir,
+        namespace="ICP",
+        skip_directory_nesting=True,
     )
     if print_code:
         print(generated_paths.generated_files[0].read_text())
@@ -139,7 +136,7 @@ def generate_point_to_plane_residual_code(
 
 
 def generate(output_dir: Path) -> None:
-    NUM_POINTS_PER_FACE = 1
+    NUM_POINTS_PER_FACE = 1000
     generate_point_to_plane_residual_code(output_dir)
     values_codegen.generate_values_keys(
         build_cube_values(NUM_POINTS_PER_FACE),
@@ -148,7 +145,9 @@ def generate(output_dir: Path) -> None:
         skip_directory_nesting=True,
     )
     build_codegen_object(NUM_POINTS_PER_FACE, config=CppConfig()).generate_function(
-        output_dir
+        output_dir,
+        namespace="ICP",
+        skip_directory_nesting=True,
     )
 
 
