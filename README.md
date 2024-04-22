@@ -15,7 +15,7 @@ The residual function computes the difference between points and their estimated
 The equation for the distance $d$ from a point $P$ to a plane determined by normal vector $N$ and point $Q$ is given by:
 
 $$
-d = \left| N^T \cdot (T*{\text{lidar}}^w \cdot P*{\text{lidar}} - Q_w) \right|
+d = \left| $N^T$ \cdot (T*_lidar^w \cdot P_lidar - Q_w) \right|
 $$
 
 Where:
