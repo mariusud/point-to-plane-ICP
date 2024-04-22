@@ -12,20 +12,21 @@ This project implements the point-to-plane ICP algorithm using the symforce libr
 
 The residual function computes the difference between points and their estimated plane correspondences in the point cloud using the centroid and normal of the plane. As long as the centroid/point correspondence is on the plane, it does not actually matter which point you choose.
 
-The equation for the distance \( d \) from a point \( P \) to a plane determined by normal vector \( N \) and point \( Q \) is given by:
+The equation for the distance $d$ from a point $P$ to a plane determined by normal vector $N$ and point $Q$ is given by:
 
-\[ d = \left| N*{w}^T \cdot (T\_{lidar}^w \cdot P*{lidar} - Q\*{w}) \right| \]
+$$
+d = \left| N^T \cdot (T*{\text{lidar}}^w \cdot P*{\text{lidar}} - Q_w) \right|
 
 Where:
 
-- \( N\*{w}^T \) is the normal vector of the plane.
-- \( T\_{lidar}^w \) is the transformation from lidar frame to world frame.
-- \( P\_{lidar} \) is the point in lidar frame.
-- \( Q\_{w} \) is the centroid of the plane in world frame.
+- $N_w^T$ is the normal vector of the plane.
+- $T_{\text{lidar}}^w$ is the transformation from lidar frame to world frame.
+- $P_{\text{lidar}}$ is the point in lidar frame.
+- $Q_w$ is the centroid of the plane in world frame.
 
-Then, the residual \( R \), which is the sum of all the distances, is given by:
+Then, the residual $R$, which is the sum of all the distances, is given by:
 
-\[ R = \sum\_{i=1}^{N} d_i \]
+$$ R = \sum\_{i=1}^{N} d_i
 
 ## Install
 
@@ -73,3 +74,4 @@ make install
 ```
 
 The CMake files will automatically find symforce, Eigen, FMT and spdlog for you, and are taken from https://github.com/gcross-zipline/find_symforce_example
+$$
