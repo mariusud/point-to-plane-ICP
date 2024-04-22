@@ -8,19 +8,19 @@ This project implements the point-to-plane ICP algorithm using the symforce libr
 
 ### Residual
 
-![Alt Text](assets/factor_graph.png)
+<img src="assets/factor_graph.png" width="653" >
 
 The residual function computes the difference between points and their estimated plane correspondences in the point cloud using the centroid and normal of the plane. As long as the centroid/point correspondence is on the plane, it does not actually matter which point you choose.
 
 The equation for the distance $d$ from a point $P$ to a plane determined by normal vector $N$ and point $Q$ is given by:
 
 $$
-d_i = \left| N^T \cdot (T_{\text{lidar}}^w \cdot P_{\text{lidar}} - Q_w) \right|
+d_i = \left| N_w^T \cdot (T_{\text{lidar}}^w \cdot P_{\text{lidar}} - Q_w) \right|
 $$
 
 Where:
 
-- $N_w^T$ is the normal vector of the plane.
+- $N_w^T$ is the normal vector of the plane in world frame.
 - $T_{\text{lidar}}^w$ is the transformation from lidar frame to world frame.
 - $P_{\text{lidar}}$ is the point in lidar frame.
 - $Q_w$ is the centroid of the plane in world frame.
@@ -45,7 +45,7 @@ python3 visualize.py
 ```
 
 This will also visualize the optimization using Open3D
-![Alt Text](assets/animation.gif)
+<img src="assets/animation.gif" width="653" >
 
 ### Generating C++ code
 
