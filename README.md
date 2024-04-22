@@ -16,6 +16,7 @@ The equation for the distance $d$ from a point $P$ to a plane determined by norm
 
 $$
 d = \left| N^T \cdot (T*{\text{lidar}}^w \cdot P*{\text{lidar}} - Q_w) \right|
+$$
 
 Where:
 
@@ -26,7 +27,9 @@ Where:
 
 Then, the residual $R$, which is the sum of all the distances, is given by:
 
-$$ R = \sum\_{i=1}^{N} d_i
+$$
+R = \sum\_{i=1}^{N} d_i
+$$
 
 ## Install
 
@@ -74,4 +77,6 @@ make install
 ```
 
 The CMake files will automatically find symforce, Eigen, FMT and spdlog for you, and are taken from https://github.com/gcross-zipline/find_symforce_example
+
+$$
 $$
