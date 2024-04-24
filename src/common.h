@@ -8,12 +8,8 @@
 
 #include "../gen/keys.h"
 
-template <typename Scalar>
-inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
+inline std::tuple<std::vector<Eigen::Vector3d>, std::vector<std::vector<int>>> generate_cube()
 {
-    sym::Values<Scalar> values;
-
-    // Define cube vertices
     std::vector<Eigen::Vector3d> cube_vertices = {
         {-0.5, -0.5, -0.5},
         {-0.5, -0.5, 0.5},
@@ -24,17 +20,25 @@ inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
         {0.5, 0.5, -0.5},
         {0.5, 0.5, 0.5}};
 
-    // Define cube faces
     std::vector<std::vector<int>> cube_faces = {
-        {0, 1, 3, 2}, // Front face
-        {4, 5, 7, 6}, // Back face
-        {0, 1, 5, 4}, // Left face
-        {2, 3, 7, 6}, // Right face
-        {0, 2, 6, 4}, // Bottom face
-        {1, 3, 7, 5}  // Top face
+        {0, 1, 2, 3}, //
+        {4, 6, 7, 5}, // left face
+        {0, 4, 5, 1}, // bottom face
+        {2, 3, 7, 6}, //
+        {0, 2, 6, 4}, //
+        {1, 7, 5, 3}  // back face
     };
 
-    // Generate points on the surface of the cube
+    return std::make_tuple(cube_vertices, cube_faces);
+}
+
+template <typename Scalar>
+inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
+{
+    sym::Values<Scalar> values;
+
+    auto [cube_vertices, cube_faces] = generate_cube();
+
     std::vector<Eigen::Vector3d> points;
     std::vector<Eigen::Vector3d> normals;
     std::vector<Eigen::Vector3d> centroids;
@@ -75,12 +79,7 @@ inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
 
     // Calculate tangent vector components
     Eigen::Matrix<Scalar, 6, 1> tangent_vec;
-    tangent_vec << -1 * t,
-        -2 * t,
-        -3 * t,
-        8 * std::sin(t * M_PI / 1.3),
-        9 * std::sin(t * M_PI / 2),
-        5 * std::sin(t * M_PI / 1.8);
+    tangent_vec << 0, 0, 0, 1, 1, 1;
 
     // Create the pose from the tangent vector
     sym::Pose3<Scalar> world_T_lidar = sym::Pose3<Scalar>::FromTangent(tangent_vec);

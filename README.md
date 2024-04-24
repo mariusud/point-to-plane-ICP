@@ -8,9 +8,8 @@ This project implements the point-to-plane ICP algorithm using the symforce libr
 
 ### Residual
 
-<div style="text-align: center;">
-    <img src="assets/factor_graph.png" width="653" >
-</div>
+<img src="assets/factor_graph.png" width="653" >
+
 The residual function computes the difference between points and their estimated plane correspondences in the point cloud using the centroid and normal of the plane. As long as the centroid/point correspondence is on the plane, it does not actually matter which point you choose.
 
 The equation for the distance $d$ from a point $P$ to a plane determined by normal vector $N$ and point $Q$ is given by:
@@ -46,10 +45,8 @@ python3 visualize.py
 ```
 
 This will also visualize the optimization using Open3D
+<img src="assets/animation.gif" width="653" >
 
-<div style="text-align: center;">
-    <img src="assets/animation.gif" width="653" >
-</div>
 ### Generating C++ code
 
 Symforce is a libray that autogenerates highly optimized code in C++. To autogenerate the C++ functions for the point-to-plane residual and the linearization function which includes the Hessian and Jacobian, you can run

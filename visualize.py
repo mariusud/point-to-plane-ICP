@@ -134,14 +134,13 @@ def generate_points_on_cube_surface(num_points_per_face):
         dtype=np.float64,
     )
 
-    # Define the faces of the cube
     faces = [
-        [0, 1, 3, 2],  # Front face
-        [4, 5, 7, 6],  # Back face
-        [0, 1, 5, 4],  # Left face
-        [2, 3, 7, 6],  # Right face
-        [0, 2, 6, 4],  # Bottom face
-        [1, 3, 7, 5],  # Top face
+        [0, 1, 2, 3],
+        [4, 6, 7, 5],
+        [0, 4, 5, 1],
+        [2, 3, 7, 6],
+        [0, 2, 6, 4],
+        [1, 7, 5, 3],
     ]
 
     for face in faces:

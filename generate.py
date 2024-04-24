@@ -34,7 +34,7 @@ def build_residual(num_correspondences, values: Values) -> sf.Matrix:
                 values.attr.normals[i],
             )
         )
-    return sf.Matrix.block_matrix([[residual] for residual in residuals])
+    return sf.Matrix(residuals)
 
 
 def build_codegen_object(
@@ -98,7 +98,7 @@ def build_codegen_object(
     ).with_linearization(
         name="linearization",
         which_args=[flat_keys[key] for key in optimized_keys],
-        sparse_linearization=True,
+        sparse_linearization=False,
     )
 
     return linearization_func
@@ -136,7 +136,7 @@ def generate_point_to_plane_residual_code(
 
 
 def generate(output_dir: Path) -> None:
-    NUM_POINTS_PER_FACE = 1000
+    NUM_POINTS_PER_FACE = 10
     generate_point_to_plane_residual_code(output_dir)
     values_codegen.generate_values_keys(
         build_cube_values(NUM_POINTS_PER_FACE),

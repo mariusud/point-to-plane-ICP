@@ -6,31 +6,28 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.27)
     )
 endif()
 
-project(symforce_test)
+project(point-to-plane-ICP)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+# add_compile_options(-ftemplate-depth=1500)
 
 # Set the installation directory path
 set(CMAKE_INSTALL_PREFIX "/home/marius/Development/symforce")
 
-include(AddThirdParty.cmake)
-include(FetchContent)
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Eigen REQUIRED)
 find_package(Symforce REQUIRED)
 
-
-# Find installed Open3D, which exports Open3D::Open3D
-# find_package(Open3D REQUIRED)
-
+include(AddThirdParty.cmake)
+include(FetchContent)
 
 # Add the executable target
-add_executable(run_dynamic_size src/run_dynamic_size.cc)
+add_executable(run_dynamic_size src/run_dynamic_size.cc src/visualize.cc)
 
 # Add dependencies
 add_dependencies(
@@ -48,6 +45,7 @@ target_link_libraries(
     run_dynamic_size
     Eigen::Eigen
     fmt::fmt
+    ${PCL_LIBRARIES}
     spdlog::spdlog
     symforce::gen
     symforce::cholesky
@@ -55,7 +53,7 @@ target_link_libraries(
 )
 
 
-add_executable(run_fixed_size src/run_fixed_size.cc)
+add_executable(run_fixed_size src/run_fixed_size.cc src/visualize.cc)
 
 # Add dependencies
 add_dependencies(
@@ -71,6 +69,7 @@ add_dependencies(
 # Link libraries
 target_link_libraries(
     run_fixed_size
+    ${PCL_LIBRARIES}
     Eigen::Eigen
     fmt::fmt
     spdlog::spdlog
@@ -78,6 +77,33 @@ target_link_libraries(
     symforce::cholesky
     symforce::opt
 )
+
+
+# add_executable(run_comparison src/run_comparison.cc)
+
+# # Add dependencies
+# add_dependencies(
+#     run_comparison
+#     Eigen::Eigen
+#     fmt::fmt
+#     spdlog::spdlog
+#     symforce::gen
+#     symforce::cholesky
+#     symforce::opt
+# )
+
+# # Link libraries
+# target_link_libraries(
+#     run_comparison
+#     Eigen::Eigen
+#     fmt::fmt
+#     spdlog::spdlog
+#     symforce::gen
+#     symforce::cholesky
+#     symforce::opt
+# )
+
+
 
 
 # Install target

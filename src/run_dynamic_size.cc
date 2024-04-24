@@ -1,6 +1,5 @@
 #include <vector>
 #include <chrono>
-
 #include <spdlog/spdlog.h>
 
 #include <symforce/opt/assert.h>
@@ -11,10 +10,10 @@
 #include "../gen/keys.h"
 #include "../gen/point_to_plane_factor.h"
 #include "./common.h"
-
-const int kNumPointsPerFace = 1000; // for each face, 6 faces on a cube
-const int kNumPoints = kNumPointsPerFace * 6;
-const int kNumPoses = 1;
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/parse.h>
+#include "./visualize.h"
 
 namespace ICP
 {
@@ -24,35 +23,40 @@ namespace ICP
     {
         return sym::Factor<Scalar>::Hessian(
             ICP::PointToPlaneFactor<Scalar>,
-            {sym::Keys::WORLD_T_LIDAR.WithSuper(i),
+            {sym::Keys::WORLD_T_LIDAR.WithSuper(0),
              sym::Keys::POINTS.WithSuper(i),
              sym::Keys::CENTROIDS.WithSuper(i),
              sym::Keys::NORMALS.WithSuper(i)},
-            {sym::Keys::WORLD_T_LIDAR.WithSuper(i)});
+            {sym::Keys::WORLD_T_LIDAR.WithSuper(0)});
     }
 
     template <typename Scalar>
-    std::vector<sym::Factor<Scalar>> BuildDynamicFactors(const int num_factors)
+    std::vector<sym::Factor<Scalar>> BuildDynamicFactors(const int kNumPoints)
     {
         std::vector<sym::Factor<Scalar>> factors;
-        for (int i = 0; i < num_factors; ++i)
+        for (int i = 0; i < kNumPoints; ++i)
         {
             factors.push_back(CreatePointToPlaneFactor<Scalar>(i));
         }
+
         return factors;
     }
 
-    void RunDynamic(const int kNumPoses, const int kNumPoints)
+    void RunDynamic()
     {
+        const int kNumPointsPerFace = 10; // for each face, 6 faces on a cube
+        const int kNumPoints = kNumPointsPerFace * 6;
+        const int kNumPoses = 1;
 
         auto values = build_cube_values<double>(kNumPointsPerFace);
 
-        const std::vector<sym::Factor<double>> factors = BuildDynamicFactors<double>(kNumPoses);
+        const std::vector<sym::Factor<double>> factors = BuildDynamicFactors<double>(kNumPoints);
         sym::Optimizer<double> optimizer(sym::DefaultOptimizerParams(), factors,
                                          "Point-To-PlaneOptimizerDynamic");
 
         spdlog::info("Initial pose: {}", values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)));
-
+        // spdlog::info("values: {}", values);
+        spdlog::info("factors: {}", factors);
         auto start = std::chrono::steady_clock::now();
 
         const sym::Optimizerd::Stats stats = optimizer.Optimize(values);
@@ -74,18 +78,12 @@ namespace ICP
         spdlog::info("Final pose: {}", values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)));
 
         spdlog::info("Status: {}", stats.status);
+        visualize(values, kNumPoints);
     }
 }
 
 int main()
 {
-    auto start = std::chrono::steady_clock::now();
-    ICP::RunDynamic(kNumPoses, kNumPoints);
-    auto end = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    spdlog::info("Time elapsed: {} milliseconds", elapsedTime);
-    spdlog::info("Number of points: {}", kNumPoints);
-
+    ICP::RunDynamic();
     return 0;
 }
