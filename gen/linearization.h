@@ -22,204 +22,1695 @@ namespace ICP {
  *
  * Output args:
  *     residual (Eigen::Matrix*): The residual vector
- *     jacobian: (1x6) jacobian of residual wrt arg world_T_lidar (6)
+ *     jacobian: (20x6) jacobian of residual wrt arg world_T_lidar (6)
  *     hessian: (6x6) Gauss-Newton hessian for arg world_T_lidar (6)
  *     rhs: (6x1) Gauss-Newton rhs for arg world_T_lidar (6)
  */
 template <typename Scalar>
-void Linearization(const Eigen::Matrix<Scalar, 3, 1>& points_0_,
-                   const Eigen::Matrix<Scalar, 3, 1>& points_1_,
-                   const Eigen::Matrix<Scalar, 3, 1>& centroids_0_,
-                   const Eigen::Matrix<Scalar, 3, 1>& centroids_1_,
-                   const Eigen::Matrix<Scalar, 3, 1>& normals_0_,
-                   const Eigen::Matrix<Scalar, 3, 1>& normals_1_,
-                   const sym::Pose3<Scalar>& world_T_lidar, const Scalar epsilon,
-                   Eigen::Matrix<Scalar, 1, 1>* const residual = nullptr,
-                   Eigen::Matrix<Scalar, 1, 6>* const jacobian = nullptr,
-                   Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
-                   Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
-  // Total ops: 266
+void Linearization(
+    const Eigen::Matrix<Scalar, 3, 1>& points_0_, const Eigen::Matrix<Scalar, 3, 1>& points_1_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_2_, const Eigen::Matrix<Scalar, 3, 1>& points_3_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_4_, const Eigen::Matrix<Scalar, 3, 1>& points_5_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_6_, const Eigen::Matrix<Scalar, 3, 1>& points_7_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_8_, const Eigen::Matrix<Scalar, 3, 1>& points_9_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_10_, const Eigen::Matrix<Scalar, 3, 1>& points_11_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_12_, const Eigen::Matrix<Scalar, 3, 1>& points_13_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_14_, const Eigen::Matrix<Scalar, 3, 1>& points_15_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_16_, const Eigen::Matrix<Scalar, 3, 1>& points_17_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_18_, const Eigen::Matrix<Scalar, 3, 1>& points_19_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_20_, const Eigen::Matrix<Scalar, 3, 1>& points_21_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_22_, const Eigen::Matrix<Scalar, 3, 1>& points_23_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_24_, const Eigen::Matrix<Scalar, 3, 1>& points_25_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_26_, const Eigen::Matrix<Scalar, 3, 1>& points_27_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_28_, const Eigen::Matrix<Scalar, 3, 1>& points_29_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_30_, const Eigen::Matrix<Scalar, 3, 1>& points_31_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_32_, const Eigen::Matrix<Scalar, 3, 1>& points_33_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_34_, const Eigen::Matrix<Scalar, 3, 1>& points_35_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_36_, const Eigen::Matrix<Scalar, 3, 1>& points_37_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_38_, const Eigen::Matrix<Scalar, 3, 1>& points_39_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_40_, const Eigen::Matrix<Scalar, 3, 1>& points_41_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_42_, const Eigen::Matrix<Scalar, 3, 1>& points_43_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_44_, const Eigen::Matrix<Scalar, 3, 1>& points_45_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_46_, const Eigen::Matrix<Scalar, 3, 1>& points_47_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_48_, const Eigen::Matrix<Scalar, 3, 1>& points_49_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_50_, const Eigen::Matrix<Scalar, 3, 1>& points_51_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_52_, const Eigen::Matrix<Scalar, 3, 1>& points_53_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_54_, const Eigen::Matrix<Scalar, 3, 1>& points_55_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_56_, const Eigen::Matrix<Scalar, 3, 1>& points_57_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_58_, const Eigen::Matrix<Scalar, 3, 1>& points_59_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_60_, const Eigen::Matrix<Scalar, 3, 1>& points_61_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_62_, const Eigen::Matrix<Scalar, 3, 1>& points_63_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_64_, const Eigen::Matrix<Scalar, 3, 1>& points_65_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_66_, const Eigen::Matrix<Scalar, 3, 1>& points_67_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_68_, const Eigen::Matrix<Scalar, 3, 1>& points_69_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_70_, const Eigen::Matrix<Scalar, 3, 1>& points_71_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_72_, const Eigen::Matrix<Scalar, 3, 1>& points_73_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_74_, const Eigen::Matrix<Scalar, 3, 1>& points_75_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_76_, const Eigen::Matrix<Scalar, 3, 1>& points_77_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_78_, const Eigen::Matrix<Scalar, 3, 1>& points_79_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_80_, const Eigen::Matrix<Scalar, 3, 1>& points_81_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_82_, const Eigen::Matrix<Scalar, 3, 1>& points_83_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_84_, const Eigen::Matrix<Scalar, 3, 1>& points_85_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_86_, const Eigen::Matrix<Scalar, 3, 1>& points_87_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_88_, const Eigen::Matrix<Scalar, 3, 1>& points_89_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_90_, const Eigen::Matrix<Scalar, 3, 1>& points_91_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_92_, const Eigen::Matrix<Scalar, 3, 1>& points_93_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_94_, const Eigen::Matrix<Scalar, 3, 1>& points_95_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_96_, const Eigen::Matrix<Scalar, 3, 1>& points_97_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_98_, const Eigen::Matrix<Scalar, 3, 1>& points_99_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_100_, const Eigen::Matrix<Scalar, 3, 1>& points_101_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_102_, const Eigen::Matrix<Scalar, 3, 1>& points_103_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_104_, const Eigen::Matrix<Scalar, 3, 1>& points_105_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_106_, const Eigen::Matrix<Scalar, 3, 1>& points_107_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_108_, const Eigen::Matrix<Scalar, 3, 1>& points_109_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_110_, const Eigen::Matrix<Scalar, 3, 1>& points_111_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_112_, const Eigen::Matrix<Scalar, 3, 1>& points_113_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_114_, const Eigen::Matrix<Scalar, 3, 1>& points_115_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_116_, const Eigen::Matrix<Scalar, 3, 1>& points_117_,
+    const Eigen::Matrix<Scalar, 3, 1>& points_118_, const Eigen::Matrix<Scalar, 3, 1>& points_119_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_0_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_1_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_2_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_3_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_4_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_5_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_6_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_7_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_8_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_9_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_10_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_11_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_12_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_13_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_14_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_15_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_16_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_17_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_18_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_19_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_20_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_21_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_22_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_23_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_24_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_25_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_26_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_27_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_28_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_29_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_30_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_31_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_32_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_33_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_34_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_35_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_36_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_37_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_38_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_39_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_40_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_41_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_42_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_43_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_44_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_45_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_46_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_47_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_48_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_49_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_50_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_51_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_52_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_53_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_54_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_55_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_56_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_57_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_58_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_59_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_60_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_61_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_62_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_63_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_64_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_65_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_66_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_67_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_68_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_69_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_70_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_71_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_72_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_73_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_74_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_75_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_76_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_77_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_78_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_79_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_80_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_81_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_82_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_83_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_84_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_85_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_86_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_87_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_88_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_89_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_90_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_91_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_92_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_93_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_94_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_95_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_96_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_97_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_98_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_99_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_100_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_101_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_102_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_103_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_104_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_105_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_106_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_107_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_108_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_109_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_110_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_111_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_112_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_113_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_114_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_115_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_116_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_117_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_118_,
+    const Eigen::Matrix<Scalar, 3, 1>& centroids_119_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_0_, const Eigen::Matrix<Scalar, 3, 1>& normals_1_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_2_, const Eigen::Matrix<Scalar, 3, 1>& normals_3_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_4_, const Eigen::Matrix<Scalar, 3, 1>& normals_5_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_6_, const Eigen::Matrix<Scalar, 3, 1>& normals_7_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_8_, const Eigen::Matrix<Scalar, 3, 1>& normals_9_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_10_, const Eigen::Matrix<Scalar, 3, 1>& normals_11_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_12_, const Eigen::Matrix<Scalar, 3, 1>& normals_13_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_14_, const Eigen::Matrix<Scalar, 3, 1>& normals_15_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_16_, const Eigen::Matrix<Scalar, 3, 1>& normals_17_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_18_, const Eigen::Matrix<Scalar, 3, 1>& normals_19_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_20_, const Eigen::Matrix<Scalar, 3, 1>& normals_21_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_22_, const Eigen::Matrix<Scalar, 3, 1>& normals_23_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_24_, const Eigen::Matrix<Scalar, 3, 1>& normals_25_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_26_, const Eigen::Matrix<Scalar, 3, 1>& normals_27_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_28_, const Eigen::Matrix<Scalar, 3, 1>& normals_29_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_30_, const Eigen::Matrix<Scalar, 3, 1>& normals_31_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_32_, const Eigen::Matrix<Scalar, 3, 1>& normals_33_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_34_, const Eigen::Matrix<Scalar, 3, 1>& normals_35_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_36_, const Eigen::Matrix<Scalar, 3, 1>& normals_37_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_38_, const Eigen::Matrix<Scalar, 3, 1>& normals_39_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_40_, const Eigen::Matrix<Scalar, 3, 1>& normals_41_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_42_, const Eigen::Matrix<Scalar, 3, 1>& normals_43_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_44_, const Eigen::Matrix<Scalar, 3, 1>& normals_45_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_46_, const Eigen::Matrix<Scalar, 3, 1>& normals_47_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_48_, const Eigen::Matrix<Scalar, 3, 1>& normals_49_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_50_, const Eigen::Matrix<Scalar, 3, 1>& normals_51_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_52_, const Eigen::Matrix<Scalar, 3, 1>& normals_53_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_54_, const Eigen::Matrix<Scalar, 3, 1>& normals_55_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_56_, const Eigen::Matrix<Scalar, 3, 1>& normals_57_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_58_, const Eigen::Matrix<Scalar, 3, 1>& normals_59_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_60_, const Eigen::Matrix<Scalar, 3, 1>& normals_61_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_62_, const Eigen::Matrix<Scalar, 3, 1>& normals_63_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_64_, const Eigen::Matrix<Scalar, 3, 1>& normals_65_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_66_, const Eigen::Matrix<Scalar, 3, 1>& normals_67_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_68_, const Eigen::Matrix<Scalar, 3, 1>& normals_69_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_70_, const Eigen::Matrix<Scalar, 3, 1>& normals_71_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_72_, const Eigen::Matrix<Scalar, 3, 1>& normals_73_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_74_, const Eigen::Matrix<Scalar, 3, 1>& normals_75_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_76_, const Eigen::Matrix<Scalar, 3, 1>& normals_77_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_78_, const Eigen::Matrix<Scalar, 3, 1>& normals_79_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_80_, const Eigen::Matrix<Scalar, 3, 1>& normals_81_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_82_, const Eigen::Matrix<Scalar, 3, 1>& normals_83_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_84_, const Eigen::Matrix<Scalar, 3, 1>& normals_85_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_86_, const Eigen::Matrix<Scalar, 3, 1>& normals_87_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_88_, const Eigen::Matrix<Scalar, 3, 1>& normals_89_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_90_, const Eigen::Matrix<Scalar, 3, 1>& normals_91_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_92_, const Eigen::Matrix<Scalar, 3, 1>& normals_93_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_94_, const Eigen::Matrix<Scalar, 3, 1>& normals_95_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_96_, const Eigen::Matrix<Scalar, 3, 1>& normals_97_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_98_, const Eigen::Matrix<Scalar, 3, 1>& normals_99_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_100_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_101_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_102_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_103_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_104_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_105_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_106_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_107_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_108_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_109_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_110_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_111_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_112_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_113_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_114_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_115_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_116_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_117_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_118_,
+    const Eigen::Matrix<Scalar, 3, 1>& normals_119_, const sym::Pose3<Scalar>& world_T_lidar,
+    const Scalar epsilon, Eigen::Matrix<Scalar, 20, 1>* const residual = nullptr,
+    Eigen::Matrix<Scalar, 20, 6>* const jacobian = nullptr,
+    Eigen::Matrix<Scalar, 6, 6>* const hessian = nullptr,
+    Eigen::Matrix<Scalar, 6, 1>* const rhs = nullptr) {
+  // Total ops: 2957
 
   // Unused inputs
+  (void)points_20_;
+  (void)points_21_;
+  (void)points_22_;
+  (void)points_23_;
+  (void)points_24_;
+  (void)points_25_;
+  (void)points_26_;
+  (void)points_27_;
+  (void)points_28_;
+  (void)points_29_;
+  (void)points_30_;
+  (void)points_31_;
+  (void)points_32_;
+  (void)points_33_;
+  (void)points_34_;
+  (void)points_35_;
+  (void)points_36_;
+  (void)points_37_;
+  (void)points_38_;
+  (void)points_39_;
+  (void)points_40_;
+  (void)points_41_;
+  (void)points_42_;
+  (void)points_43_;
+  (void)points_44_;
+  (void)points_45_;
+  (void)points_46_;
+  (void)points_47_;
+  (void)points_48_;
+  (void)points_49_;
+  (void)points_50_;
+  (void)points_51_;
+  (void)points_52_;
+  (void)points_53_;
+  (void)points_54_;
+  (void)points_55_;
+  (void)points_56_;
+  (void)points_57_;
+  (void)points_58_;
+  (void)points_59_;
+  (void)points_60_;
+  (void)points_61_;
+  (void)points_62_;
+  (void)points_63_;
+  (void)points_64_;
+  (void)points_65_;
+  (void)points_66_;
+  (void)points_67_;
+  (void)points_68_;
+  (void)points_69_;
+  (void)points_70_;
+  (void)points_71_;
+  (void)points_72_;
+  (void)points_73_;
+  (void)points_74_;
+  (void)points_75_;
+  (void)points_76_;
+  (void)points_77_;
+  (void)points_78_;
+  (void)points_79_;
+  (void)points_80_;
+  (void)points_81_;
+  (void)points_82_;
+  (void)points_83_;
+  (void)points_84_;
+  (void)points_85_;
+  (void)points_86_;
+  (void)points_87_;
+  (void)points_88_;
+  (void)points_89_;
+  (void)points_90_;
+  (void)points_91_;
+  (void)points_92_;
+  (void)points_93_;
+  (void)points_94_;
+  (void)points_95_;
+  (void)points_96_;
+  (void)points_97_;
+  (void)points_98_;
+  (void)points_99_;
+  (void)points_100_;
+  (void)points_101_;
+  (void)points_102_;
+  (void)points_103_;
+  (void)points_104_;
+  (void)points_105_;
+  (void)points_106_;
+  (void)points_107_;
+  (void)points_108_;
+  (void)points_109_;
+  (void)points_110_;
+  (void)points_111_;
+  (void)points_112_;
+  (void)points_113_;
+  (void)points_114_;
+  (void)points_115_;
+  (void)points_116_;
+  (void)points_117_;
+  (void)points_118_;
+  (void)points_119_;
+  (void)centroids_20_;
+  (void)centroids_21_;
+  (void)centroids_22_;
+  (void)centroids_23_;
+  (void)centroids_24_;
+  (void)centroids_25_;
+  (void)centroids_26_;
+  (void)centroids_27_;
+  (void)centroids_28_;
+  (void)centroids_29_;
+  (void)centroids_30_;
+  (void)centroids_31_;
+  (void)centroids_32_;
+  (void)centroids_33_;
+  (void)centroids_34_;
+  (void)centroids_35_;
+  (void)centroids_36_;
+  (void)centroids_37_;
+  (void)centroids_38_;
+  (void)centroids_39_;
+  (void)centroids_40_;
+  (void)centroids_41_;
+  (void)centroids_42_;
+  (void)centroids_43_;
+  (void)centroids_44_;
+  (void)centroids_45_;
+  (void)centroids_46_;
+  (void)centroids_47_;
+  (void)centroids_48_;
+  (void)centroids_49_;
+  (void)centroids_50_;
+  (void)centroids_51_;
+  (void)centroids_52_;
+  (void)centroids_53_;
+  (void)centroids_54_;
+  (void)centroids_55_;
+  (void)centroids_56_;
+  (void)centroids_57_;
+  (void)centroids_58_;
+  (void)centroids_59_;
+  (void)centroids_60_;
+  (void)centroids_61_;
+  (void)centroids_62_;
+  (void)centroids_63_;
+  (void)centroids_64_;
+  (void)centroids_65_;
+  (void)centroids_66_;
+  (void)centroids_67_;
+  (void)centroids_68_;
+  (void)centroids_69_;
+  (void)centroids_70_;
+  (void)centroids_71_;
+  (void)centroids_72_;
+  (void)centroids_73_;
+  (void)centroids_74_;
+  (void)centroids_75_;
+  (void)centroids_76_;
+  (void)centroids_77_;
+  (void)centroids_78_;
+  (void)centroids_79_;
+  (void)centroids_80_;
+  (void)centroids_81_;
+  (void)centroids_82_;
+  (void)centroids_83_;
+  (void)centroids_84_;
+  (void)centroids_85_;
+  (void)centroids_86_;
+  (void)centroids_87_;
+  (void)centroids_88_;
+  (void)centroids_89_;
+  (void)centroids_90_;
+  (void)centroids_91_;
+  (void)centroids_92_;
+  (void)centroids_93_;
+  (void)centroids_94_;
+  (void)centroids_95_;
+  (void)centroids_96_;
+  (void)centroids_97_;
+  (void)centroids_98_;
+  (void)centroids_99_;
+  (void)centroids_100_;
+  (void)centroids_101_;
+  (void)centroids_102_;
+  (void)centroids_103_;
+  (void)centroids_104_;
+  (void)centroids_105_;
+  (void)centroids_106_;
+  (void)centroids_107_;
+  (void)centroids_108_;
+  (void)centroids_109_;
+  (void)centroids_110_;
+  (void)centroids_111_;
+  (void)centroids_112_;
+  (void)centroids_113_;
+  (void)centroids_114_;
+  (void)centroids_115_;
+  (void)centroids_116_;
+  (void)centroids_117_;
+  (void)centroids_118_;
+  (void)centroids_119_;
+  (void)normals_20_;
+  (void)normals_21_;
+  (void)normals_22_;
+  (void)normals_23_;
+  (void)normals_24_;
+  (void)normals_25_;
+  (void)normals_26_;
+  (void)normals_27_;
+  (void)normals_28_;
+  (void)normals_29_;
+  (void)normals_30_;
+  (void)normals_31_;
+  (void)normals_32_;
+  (void)normals_33_;
+  (void)normals_34_;
+  (void)normals_35_;
+  (void)normals_36_;
+  (void)normals_37_;
+  (void)normals_38_;
+  (void)normals_39_;
+  (void)normals_40_;
+  (void)normals_41_;
+  (void)normals_42_;
+  (void)normals_43_;
+  (void)normals_44_;
+  (void)normals_45_;
+  (void)normals_46_;
+  (void)normals_47_;
+  (void)normals_48_;
+  (void)normals_49_;
+  (void)normals_50_;
+  (void)normals_51_;
+  (void)normals_52_;
+  (void)normals_53_;
+  (void)normals_54_;
+  (void)normals_55_;
+  (void)normals_56_;
+  (void)normals_57_;
+  (void)normals_58_;
+  (void)normals_59_;
+  (void)normals_60_;
+  (void)normals_61_;
+  (void)normals_62_;
+  (void)normals_63_;
+  (void)normals_64_;
+  (void)normals_65_;
+  (void)normals_66_;
+  (void)normals_67_;
+  (void)normals_68_;
+  (void)normals_69_;
+  (void)normals_70_;
+  (void)normals_71_;
+  (void)normals_72_;
+  (void)normals_73_;
+  (void)normals_74_;
+  (void)normals_75_;
+  (void)normals_76_;
+  (void)normals_77_;
+  (void)normals_78_;
+  (void)normals_79_;
+  (void)normals_80_;
+  (void)normals_81_;
+  (void)normals_82_;
+  (void)normals_83_;
+  (void)normals_84_;
+  (void)normals_85_;
+  (void)normals_86_;
+  (void)normals_87_;
+  (void)normals_88_;
+  (void)normals_89_;
+  (void)normals_90_;
+  (void)normals_91_;
+  (void)normals_92_;
+  (void)normals_93_;
+  (void)normals_94_;
+  (void)normals_95_;
+  (void)normals_96_;
+  (void)normals_97_;
+  (void)normals_98_;
+  (void)normals_99_;
+  (void)normals_100_;
+  (void)normals_101_;
+  (void)normals_102_;
+  (void)normals_103_;
+  (void)normals_104_;
+  (void)normals_105_;
+  (void)normals_106_;
+  (void)normals_107_;
+  (void)normals_108_;
+  (void)normals_109_;
+  (void)normals_110_;
+  (void)normals_111_;
+  (void)normals_112_;
+  (void)normals_113_;
+  (void)normals_114_;
+  (void)normals_115_;
+  (void)normals_116_;
+  (void)normals_117_;
+  (void)normals_118_;
+  (void)normals_119_;
   (void)epsilon;
 
   // Input arrays
   const Eigen::Matrix<Scalar, 7, 1>& _world_T_lidar = world_T_lidar.Data();
 
-  // Intermediate terms (74)
-  const Scalar _tmp0 = std::pow(_world_T_lidar[0], Scalar(2));
+  // Intermediate terms (352)
+  const Scalar _tmp0 = std::pow(_world_T_lidar[2], Scalar(2));
   const Scalar _tmp1 = -2 * _tmp0;
-  const Scalar _tmp2 = std::pow(_world_T_lidar[2], Scalar(2));
+  const Scalar _tmp2 = std::pow(_world_T_lidar[0], Scalar(2));
   const Scalar _tmp3 = 1 - 2 * _tmp2;
   const Scalar _tmp4 = _tmp1 + _tmp3;
-  const Scalar _tmp5 = 2 * _world_T_lidar[3];
-  const Scalar _tmp6 = _tmp5 * _world_T_lidar[0];
+  const Scalar _tmp5 = 2 * _world_T_lidar[0];
+  const Scalar _tmp6 = _tmp5 * _world_T_lidar[3];
   const Scalar _tmp7 = -_tmp6;
-  const Scalar _tmp8 = 2 * _world_T_lidar[1];
-  const Scalar _tmp9 = _tmp8 * _world_T_lidar[2];
+  const Scalar _tmp8 = 2 * _world_T_lidar[2];
+  const Scalar _tmp9 = _tmp8 * _world_T_lidar[1];
   const Scalar _tmp10 = _tmp7 + _tmp9;
-  const Scalar _tmp11 = _tmp8 * _world_T_lidar[0];
-  const Scalar _tmp12 = _tmp5 * _world_T_lidar[2];
+  const Scalar _tmp11 = _tmp5 * _world_T_lidar[1];
+  const Scalar _tmp12 = _tmp8 * _world_T_lidar[3];
   const Scalar _tmp13 = _tmp11 + _tmp12;
   const Scalar _tmp14 = std::pow(_world_T_lidar[1], Scalar(2));
   const Scalar _tmp15 = -2 * _tmp14;
-  const Scalar _tmp16 = _tmp1 + _tmp15 + 1;
+  const Scalar _tmp16 = _tmp15 + _tmp3;
   const Scalar _tmp17 = _tmp6 + _tmp9;
-  const Scalar _tmp18 = 2 * _world_T_lidar[0] * _world_T_lidar[2];
-  const Scalar _tmp19 = _tmp5 * _world_T_lidar[1];
+  const Scalar _tmp18 = _tmp8 * _world_T_lidar[0];
+  const Scalar _tmp19 = 2 * _world_T_lidar[1] * _world_T_lidar[3];
   const Scalar _tmp20 = -_tmp19;
   const Scalar _tmp21 = _tmp18 + _tmp20;
-  const Scalar _tmp22 = _tmp15 + _tmp3;
+  const Scalar _tmp22 = _tmp1 + _tmp15 + 1;
   const Scalar _tmp23 = -_tmp12;
   const Scalar _tmp24 = _tmp11 + _tmp23;
   const Scalar _tmp25 = _tmp18 + _tmp19;
   const Scalar _tmp26 =
-      normals_1_(0, 0) * (_tmp22 * points_1_(0, 0) + _tmp24 * points_1_(1, 0) +
-                          _tmp25 * points_1_(2, 0) + _world_T_lidar[4] - centroids_1_(0, 0)) +
-      normals_1_(1, 0) * (_tmp10 * points_1_(2, 0) + _tmp13 * points_1_(0, 0) +
-                          _tmp4 * points_1_(1, 0) + _world_T_lidar[5] - centroids_1_(1, 0)) +
-      normals_1_(2, 0) * (_tmp16 * points_1_(2, 0) + _tmp17 * points_1_(1, 0) +
-                          _tmp21 * points_1_(0, 0) + _world_T_lidar[6] - centroids_1_(2, 0));
-  const Scalar _tmp27 =
       normals_0_(0, 0) * (_tmp22 * points_0_(0, 0) + _tmp24 * points_0_(1, 0) +
                           _tmp25 * points_0_(2, 0) + _world_T_lidar[4] - centroids_0_(0, 0)) +
       normals_0_(1, 0) * (_tmp10 * points_0_(2, 0) + _tmp13 * points_0_(0, 0) +
                           _tmp4 * points_0_(1, 0) + _world_T_lidar[5] - centroids_0_(1, 0)) +
       normals_0_(2, 0) * (_tmp16 * points_0_(2, 0) + _tmp17 * points_0_(1, 0) +
                           _tmp21 * points_0_(0, 0) + _world_T_lidar[6] - centroids_0_(2, 0));
-  const Scalar _tmp28 = std::pow(_tmp26, Scalar(2)) + std::pow(_tmp27, Scalar(2));
-  const Scalar _tmp29 = std::sqrt(_tmp28);
-  const Scalar _tmp30 = Scalar(1.0) / (_tmp29);
-  const Scalar _tmp31 = -_tmp11;
-  const Scalar _tmp32 = _tmp12 + _tmp31;
-  const Scalar _tmp33 = -_tmp14;
-  const Scalar _tmp34 = std::pow(_world_T_lidar[3], Scalar(2));
-  const Scalar _tmp35 = -_tmp34;
-  const Scalar _tmp36 = _tmp0 + _tmp2 + _tmp33 + _tmp35;
-  const Scalar _tmp37 = _tmp33 + _tmp34;
-  const Scalar _tmp38 = -_tmp0;
-  const Scalar _tmp39 = _tmp2 + _tmp38;
-  const Scalar _tmp40 = _tmp37 + _tmp39;
-  const Scalar _tmp41 = -_tmp9;
-  const Scalar _tmp42 = _tmp41 + _tmp7;
-  const Scalar _tmp43 = 2 * _tmp27;
-  const Scalar _tmp44 = 2 * _tmp26;
-  const Scalar _tmp45 =
-      _tmp43 * (normals_0_(0, 0) * (_tmp25 * points_0_(1, 0) + _tmp32 * points_0_(2, 0)) +
-                normals_0_(1, 0) * (_tmp10 * points_0_(1, 0) + _tmp36 * points_0_(2, 0)) +
-                normals_0_(2, 0) * (_tmp40 * points_0_(1, 0) + _tmp42 * points_0_(2, 0))) +
-      _tmp44 * (normals_1_(0, 0) * (_tmp25 * points_1_(1, 0) + _tmp32 * points_1_(2, 0)) +
-                normals_1_(1, 0) * (_tmp10 * points_1_(1, 0) + _tmp36 * points_1_(2, 0)) +
-                normals_1_(2, 0) * (_tmp40 * points_1_(1, 0) + _tmp42 * points_1_(2, 0)));
-  const Scalar _tmp46 = (Scalar(1) / Scalar(2)) * _tmp45;
-  const Scalar _tmp47 = -_tmp2;
-  const Scalar _tmp48 = _tmp0 + _tmp47;
-  const Scalar _tmp49 = _tmp37 + _tmp48;
-  const Scalar _tmp50 = -_tmp18;
-  const Scalar _tmp51 = _tmp20 + _tmp50;
-  const Scalar _tmp52 = _tmp14 + _tmp35;
-  const Scalar _tmp53 = _tmp48 + _tmp52;
-  const Scalar _tmp54 = _tmp41 + _tmp6;
-  const Scalar _tmp55 =
-      _tmp43 * (normals_0_(0, 0) * (_tmp49 * points_0_(2, 0) + _tmp51 * points_0_(0, 0)) +
-                normals_0_(1, 0) * (_tmp13 * points_0_(2, 0) + _tmp54 * points_0_(0, 0)) +
-                normals_0_(2, 0) * (_tmp21 * points_0_(2, 0) + _tmp53 * points_0_(0, 0))) +
-      _tmp44 * (normals_1_(0, 0) * (_tmp49 * points_1_(2, 0) + _tmp51 * points_1_(0, 0)) +
-                normals_1_(1, 0) * (_tmp13 * points_1_(2, 0) + _tmp54 * points_1_(0, 0)) +
-                normals_1_(2, 0) * (_tmp21 * points_1_(2, 0) + _tmp53 * points_1_(0, 0)));
-  const Scalar _tmp56 = (Scalar(1) / Scalar(2)) * _tmp55;
-  const Scalar _tmp57 = _tmp39 + _tmp52;
-  const Scalar _tmp58 = _tmp14 + _tmp34 + _tmp38 + _tmp47;
-  const Scalar _tmp59 = _tmp23 + _tmp31;
-  const Scalar _tmp60 = _tmp19 + _tmp50;
-  const Scalar _tmp61 =
-      _tmp43 * (normals_0_(0, 0) * (_tmp24 * points_0_(0, 0) + _tmp57 * points_0_(1, 0)) +
-                normals_0_(1, 0) * (_tmp58 * points_0_(0, 0) + _tmp59 * points_0_(1, 0)) +
-                normals_0_(2, 0) * (_tmp17 * points_0_(0, 0) + _tmp60 * points_0_(1, 0))) +
-      _tmp44 * (normals_1_(0, 0) * (_tmp24 * points_1_(0, 0) + _tmp57 * points_1_(1, 0)) +
-                normals_1_(1, 0) * (_tmp58 * points_1_(0, 0) + _tmp59 * points_1_(1, 0)) +
-                normals_1_(2, 0) * (_tmp17 * points_1_(0, 0) + _tmp60 * points_1_(1, 0)));
-  const Scalar _tmp62 = (Scalar(1) / Scalar(2)) * _tmp61;
-  const Scalar _tmp63 = _tmp43 * normals_0_(0, 0) + _tmp44 * normals_1_(0, 0);
-  const Scalar _tmp64 = (Scalar(1) / Scalar(2)) * _tmp63;
-  const Scalar _tmp65 = _tmp43 * normals_0_(1, 0) + _tmp44 * normals_1_(1, 0);
-  const Scalar _tmp66 = (Scalar(1) / Scalar(2)) * _tmp65;
-  const Scalar _tmp67 = _tmp43 * normals_0_(2, 0) + _tmp44 * normals_1_(2, 0);
-  const Scalar _tmp68 = (Scalar(1) / Scalar(2)) * _tmp67;
-  const Scalar _tmp69 = (Scalar(1) / Scalar(4)) / _tmp28;
-  const Scalar _tmp70 = _tmp45 * _tmp69;
-  const Scalar _tmp71 = _tmp55 * _tmp69;
-  const Scalar _tmp72 = _tmp63 * _tmp69;
-  const Scalar _tmp73 = _tmp67 * _tmp69;
+  const Scalar _tmp27 = std::pow(_tmp26, Scalar(2));
+  const Scalar _tmp28 =
+      normals_1_(0, 0) * (_tmp22 * points_1_(0, 0) + _tmp24 * points_1_(1, 0) +
+                          _tmp25 * points_1_(2, 0) + _world_T_lidar[4] - centroids_1_(0, 0)) +
+      normals_1_(1, 0) * (_tmp10 * points_1_(2, 0) + _tmp13 * points_1_(0, 0) +
+                          _tmp4 * points_1_(1, 0) + _world_T_lidar[5] - centroids_1_(1, 0)) +
+      normals_1_(2, 0) * (_tmp16 * points_1_(2, 0) + _tmp17 * points_1_(1, 0) +
+                          _tmp21 * points_1_(0, 0) + _world_T_lidar[6] - centroids_1_(2, 0));
+  const Scalar _tmp29 = std::pow(_tmp28, Scalar(2));
+  const Scalar _tmp30 =
+      normals_2_(0, 0) * (_tmp22 * points_2_(0, 0) + _tmp24 * points_2_(1, 0) +
+                          _tmp25 * points_2_(2, 0) + _world_T_lidar[4] - centroids_2_(0, 0)) +
+      normals_2_(1, 0) * (_tmp10 * points_2_(2, 0) + _tmp13 * points_2_(0, 0) +
+                          _tmp4 * points_2_(1, 0) + _world_T_lidar[5] - centroids_2_(1, 0)) +
+      normals_2_(2, 0) * (_tmp16 * points_2_(2, 0) + _tmp17 * points_2_(1, 0) +
+                          _tmp21 * points_2_(0, 0) + _world_T_lidar[6] - centroids_2_(2, 0));
+  const Scalar _tmp31 = std::pow(_tmp30, Scalar(2));
+  const Scalar _tmp32 =
+      normals_3_(0, 0) * (_tmp22 * points_3_(0, 0) + _tmp24 * points_3_(1, 0) +
+                          _tmp25 * points_3_(2, 0) + _world_T_lidar[4] - centroids_3_(0, 0)) +
+      normals_3_(1, 0) * (_tmp10 * points_3_(2, 0) + _tmp13 * points_3_(0, 0) +
+                          _tmp4 * points_3_(1, 0) + _world_T_lidar[5] - centroids_3_(1, 0)) +
+      normals_3_(2, 0) * (_tmp16 * points_3_(2, 0) + _tmp17 * points_3_(1, 0) +
+                          _tmp21 * points_3_(0, 0) + _world_T_lidar[6] - centroids_3_(2, 0));
+  const Scalar _tmp33 = std::pow(_tmp32, Scalar(2));
+  const Scalar _tmp34 =
+      normals_4_(0, 0) * (_tmp22 * points_4_(0, 0) + _tmp24 * points_4_(1, 0) +
+                          _tmp25 * points_4_(2, 0) + _world_T_lidar[4] - centroids_4_(0, 0)) +
+      normals_4_(1, 0) * (_tmp10 * points_4_(2, 0) + _tmp13 * points_4_(0, 0) +
+                          _tmp4 * points_4_(1, 0) + _world_T_lidar[5] - centroids_4_(1, 0)) +
+      normals_4_(2, 0) * (_tmp16 * points_4_(2, 0) + _tmp17 * points_4_(1, 0) +
+                          _tmp21 * points_4_(0, 0) + _world_T_lidar[6] - centroids_4_(2, 0));
+  const Scalar _tmp35 = std::pow(_tmp34, Scalar(2));
+  const Scalar _tmp36 =
+      normals_5_(0, 0) * (_tmp22 * points_5_(0, 0) + _tmp24 * points_5_(1, 0) +
+                          _tmp25 * points_5_(2, 0) + _world_T_lidar[4] - centroids_5_(0, 0)) +
+      normals_5_(1, 0) * (_tmp10 * points_5_(2, 0) + _tmp13 * points_5_(0, 0) +
+                          _tmp4 * points_5_(1, 0) + _world_T_lidar[5] - centroids_5_(1, 0)) +
+      normals_5_(2, 0) * (_tmp16 * points_5_(2, 0) + _tmp17 * points_5_(1, 0) +
+                          _tmp21 * points_5_(0, 0) + _world_T_lidar[6] - centroids_5_(2, 0));
+  const Scalar _tmp37 = std::pow(_tmp36, Scalar(2));
+  const Scalar _tmp38 =
+      normals_6_(0, 0) * (_tmp22 * points_6_(0, 0) + _tmp24 * points_6_(1, 0) +
+                          _tmp25 * points_6_(2, 0) + _world_T_lidar[4] - centroids_6_(0, 0)) +
+      normals_6_(1, 0) * (_tmp10 * points_6_(2, 0) + _tmp13 * points_6_(0, 0) +
+                          _tmp4 * points_6_(1, 0) + _world_T_lidar[5] - centroids_6_(1, 0)) +
+      normals_6_(2, 0) * (_tmp16 * points_6_(2, 0) + _tmp17 * points_6_(1, 0) +
+                          _tmp21 * points_6_(0, 0) + _world_T_lidar[6] - centroids_6_(2, 0));
+  const Scalar _tmp39 = std::pow(_tmp38, Scalar(2));
+  const Scalar _tmp40 =
+      normals_7_(0, 0) * (_tmp22 * points_7_(0, 0) + _tmp24 * points_7_(1, 0) +
+                          _tmp25 * points_7_(2, 0) + _world_T_lidar[4] - centroids_7_(0, 0)) +
+      normals_7_(1, 0) * (_tmp10 * points_7_(2, 0) + _tmp13 * points_7_(0, 0) +
+                          _tmp4 * points_7_(1, 0) + _world_T_lidar[5] - centroids_7_(1, 0)) +
+      normals_7_(2, 0) * (_tmp16 * points_7_(2, 0) + _tmp17 * points_7_(1, 0) +
+                          _tmp21 * points_7_(0, 0) + _world_T_lidar[6] - centroids_7_(2, 0));
+  const Scalar _tmp41 = std::pow(_tmp40, Scalar(2));
+  const Scalar _tmp42 =
+      normals_8_(0, 0) * (_tmp22 * points_8_(0, 0) + _tmp24 * points_8_(1, 0) +
+                          _tmp25 * points_8_(2, 0) + _world_T_lidar[4] - centroids_8_(0, 0)) +
+      normals_8_(1, 0) * (_tmp10 * points_8_(2, 0) + _tmp13 * points_8_(0, 0) +
+                          _tmp4 * points_8_(1, 0) + _world_T_lidar[5] - centroids_8_(1, 0)) +
+      normals_8_(2, 0) * (_tmp16 * points_8_(2, 0) + _tmp17 * points_8_(1, 0) +
+                          _tmp21 * points_8_(0, 0) + _world_T_lidar[6] - centroids_8_(2, 0));
+  const Scalar _tmp43 = std::pow(_tmp42, Scalar(2));
+  const Scalar _tmp44 =
+      normals_9_(0, 0) * (_tmp22 * points_9_(0, 0) + _tmp24 * points_9_(1, 0) +
+                          _tmp25 * points_9_(2, 0) + _world_T_lidar[4] - centroids_9_(0, 0)) +
+      normals_9_(1, 0) * (_tmp10 * points_9_(2, 0) + _tmp13 * points_9_(0, 0) +
+                          _tmp4 * points_9_(1, 0) + _world_T_lidar[5] - centroids_9_(1, 0)) +
+      normals_9_(2, 0) * (_tmp16 * points_9_(2, 0) + _tmp17 * points_9_(1, 0) +
+                          _tmp21 * points_9_(0, 0) + _world_T_lidar[6] - centroids_9_(2, 0));
+  const Scalar _tmp45 = std::pow(_tmp44, Scalar(2));
+  const Scalar _tmp46 =
+      normals_10_(0, 0) * (_tmp22 * points_10_(0, 0) + _tmp24 * points_10_(1, 0) +
+                           _tmp25 * points_10_(2, 0) + _world_T_lidar[4] - centroids_10_(0, 0)) +
+      normals_10_(1, 0) * (_tmp10 * points_10_(2, 0) + _tmp13 * points_10_(0, 0) +
+                           _tmp4 * points_10_(1, 0) + _world_T_lidar[5] - centroids_10_(1, 0)) +
+      normals_10_(2, 0) * (_tmp16 * points_10_(2, 0) + _tmp17 * points_10_(1, 0) +
+                           _tmp21 * points_10_(0, 0) + _world_T_lidar[6] - centroids_10_(2, 0));
+  const Scalar _tmp47 = std::pow(_tmp46, Scalar(2));
+  const Scalar _tmp48 =
+      normals_11_(0, 0) * (_tmp22 * points_11_(0, 0) + _tmp24 * points_11_(1, 0) +
+                           _tmp25 * points_11_(2, 0) + _world_T_lidar[4] - centroids_11_(0, 0)) +
+      normals_11_(1, 0) * (_tmp10 * points_11_(2, 0) + _tmp13 * points_11_(0, 0) +
+                           _tmp4 * points_11_(1, 0) + _world_T_lidar[5] - centroids_11_(1, 0)) +
+      normals_11_(2, 0) * (_tmp16 * points_11_(2, 0) + _tmp17 * points_11_(1, 0) +
+                           _tmp21 * points_11_(0, 0) + _world_T_lidar[6] - centroids_11_(2, 0));
+  const Scalar _tmp49 = std::pow(_tmp48, Scalar(2));
+  const Scalar _tmp50 =
+      normals_12_(0, 0) * (_tmp22 * points_12_(0, 0) + _tmp24 * points_12_(1, 0) +
+                           _tmp25 * points_12_(2, 0) + _world_T_lidar[4] - centroids_12_(0, 0)) +
+      normals_12_(1, 0) * (_tmp10 * points_12_(2, 0) + _tmp13 * points_12_(0, 0) +
+                           _tmp4 * points_12_(1, 0) + _world_T_lidar[5] - centroids_12_(1, 0)) +
+      normals_12_(2, 0) * (_tmp16 * points_12_(2, 0) + _tmp17 * points_12_(1, 0) +
+                           _tmp21 * points_12_(0, 0) + _world_T_lidar[6] - centroids_12_(2, 0));
+  const Scalar _tmp51 = std::pow(_tmp50, Scalar(2));
+  const Scalar _tmp52 =
+      normals_13_(0, 0) * (_tmp22 * points_13_(0, 0) + _tmp24 * points_13_(1, 0) +
+                           _tmp25 * points_13_(2, 0) + _world_T_lidar[4] - centroids_13_(0, 0)) +
+      normals_13_(1, 0) * (_tmp10 * points_13_(2, 0) + _tmp13 * points_13_(0, 0) +
+                           _tmp4 * points_13_(1, 0) + _world_T_lidar[5] - centroids_13_(1, 0)) +
+      normals_13_(2, 0) * (_tmp16 * points_13_(2, 0) + _tmp17 * points_13_(1, 0) +
+                           _tmp21 * points_13_(0, 0) + _world_T_lidar[6] - centroids_13_(2, 0));
+  const Scalar _tmp53 = std::pow(_tmp52, Scalar(2));
+  const Scalar _tmp54 =
+      normals_14_(0, 0) * (_tmp22 * points_14_(0, 0) + _tmp24 * points_14_(1, 0) +
+                           _tmp25 * points_14_(2, 0) + _world_T_lidar[4] - centroids_14_(0, 0)) +
+      normals_14_(1, 0) * (_tmp10 * points_14_(2, 0) + _tmp13 * points_14_(0, 0) +
+                           _tmp4 * points_14_(1, 0) + _world_T_lidar[5] - centroids_14_(1, 0)) +
+      normals_14_(2, 0) * (_tmp16 * points_14_(2, 0) + _tmp17 * points_14_(1, 0) +
+                           _tmp21 * points_14_(0, 0) + _world_T_lidar[6] - centroids_14_(2, 0));
+  const Scalar _tmp55 = std::pow(_tmp54, Scalar(2));
+  const Scalar _tmp56 =
+      normals_15_(0, 0) * (_tmp22 * points_15_(0, 0) + _tmp24 * points_15_(1, 0) +
+                           _tmp25 * points_15_(2, 0) + _world_T_lidar[4] - centroids_15_(0, 0)) +
+      normals_15_(1, 0) * (_tmp10 * points_15_(2, 0) + _tmp13 * points_15_(0, 0) +
+                           _tmp4 * points_15_(1, 0) + _world_T_lidar[5] - centroids_15_(1, 0)) +
+      normals_15_(2, 0) * (_tmp16 * points_15_(2, 0) + _tmp17 * points_15_(1, 0) +
+                           _tmp21 * points_15_(0, 0) + _world_T_lidar[6] - centroids_15_(2, 0));
+  const Scalar _tmp57 = std::pow(_tmp56, Scalar(2));
+  const Scalar _tmp58 =
+      normals_16_(0, 0) * (_tmp22 * points_16_(0, 0) + _tmp24 * points_16_(1, 0) +
+                           _tmp25 * points_16_(2, 0) + _world_T_lidar[4] - centroids_16_(0, 0)) +
+      normals_16_(1, 0) * (_tmp10 * points_16_(2, 0) + _tmp13 * points_16_(0, 0) +
+                           _tmp4 * points_16_(1, 0) + _world_T_lidar[5] - centroids_16_(1, 0)) +
+      normals_16_(2, 0) * (_tmp16 * points_16_(2, 0) + _tmp17 * points_16_(1, 0) +
+                           _tmp21 * points_16_(0, 0) + _world_T_lidar[6] - centroids_16_(2, 0));
+  const Scalar _tmp59 = std::pow(_tmp58, Scalar(2));
+  const Scalar _tmp60 =
+      normals_17_(0, 0) * (_tmp22 * points_17_(0, 0) + _tmp24 * points_17_(1, 0) +
+                           _tmp25 * points_17_(2, 0) + _world_T_lidar[4] - centroids_17_(0, 0)) +
+      normals_17_(1, 0) * (_tmp10 * points_17_(2, 0) + _tmp13 * points_17_(0, 0) +
+                           _tmp4 * points_17_(1, 0) + _world_T_lidar[5] - centroids_17_(1, 0)) +
+      normals_17_(2, 0) * (_tmp16 * points_17_(2, 0) + _tmp17 * points_17_(1, 0) +
+                           _tmp21 * points_17_(0, 0) + _world_T_lidar[6] - centroids_17_(2, 0));
+  const Scalar _tmp61 = std::pow(_tmp60, Scalar(2));
+  const Scalar _tmp62 =
+      normals_18_(0, 0) * (_tmp22 * points_18_(0, 0) + _tmp24 * points_18_(1, 0) +
+                           _tmp25 * points_18_(2, 0) + _world_T_lidar[4] - centroids_18_(0, 0)) +
+      normals_18_(1, 0) * (_tmp10 * points_18_(2, 0) + _tmp13 * points_18_(0, 0) +
+                           _tmp4 * points_18_(1, 0) + _world_T_lidar[5] - centroids_18_(1, 0)) +
+      normals_18_(2, 0) * (_tmp16 * points_18_(2, 0) + _tmp17 * points_18_(1, 0) +
+                           _tmp21 * points_18_(0, 0) + _world_T_lidar[6] - centroids_18_(2, 0));
+  const Scalar _tmp63 = std::pow(_tmp62, Scalar(2));
+  const Scalar _tmp64 =
+      normals_19_(0, 0) * (_tmp22 * points_19_(0, 0) + _tmp24 * points_19_(1, 0) +
+                           _tmp25 * points_19_(2, 0) + _world_T_lidar[4] - centroids_19_(0, 0)) +
+      normals_19_(1, 0) * (_tmp10 * points_19_(2, 0) + _tmp13 * points_19_(0, 0) +
+                           _tmp4 * points_19_(1, 0) + _world_T_lidar[5] - centroids_19_(1, 0)) +
+      normals_19_(2, 0) * (_tmp16 * points_19_(2, 0) + _tmp17 * points_19_(1, 0) +
+                           _tmp21 * points_19_(0, 0) + _world_T_lidar[6] - centroids_19_(2, 0));
+  const Scalar _tmp65 = std::pow(_tmp64, Scalar(2));
+  const Scalar _tmp66 = -_tmp11;
+  const Scalar _tmp67 = _tmp12 + _tmp66;
+  const Scalar _tmp68 = -_tmp14;
+  const Scalar _tmp69 = std::pow(_world_T_lidar[3], Scalar(2));
+  const Scalar _tmp70 = -_tmp69;
+  const Scalar _tmp71 = _tmp0 + _tmp2 + _tmp68 + _tmp70;
+  const Scalar _tmp72 = _tmp68 + _tmp69;
+  const Scalar _tmp73 = -_tmp2;
+  const Scalar _tmp74 = _tmp0 + _tmp73;
+  const Scalar _tmp75 = _tmp72 + _tmp74;
+  const Scalar _tmp76 = -_tmp9;
+  const Scalar _tmp77 = _tmp7 + _tmp76;
+  const Scalar _tmp78 = normals_0_(0, 0) * (_tmp25 * points_0_(1, 0) + _tmp67 * points_0_(2, 0)) +
+                        normals_0_(1, 0) * (_tmp10 * points_0_(1, 0) + _tmp71 * points_0_(2, 0)) +
+                        normals_0_(2, 0) * (_tmp75 * points_0_(1, 0) + _tmp77 * points_0_(2, 0));
+  const Scalar _tmp79 = 2 * _tmp26;
+  const Scalar _tmp80 = normals_1_(0, 0) * (_tmp25 * points_1_(1, 0) + _tmp67 * points_1_(2, 0)) +
+                        normals_1_(1, 0) * (_tmp10 * points_1_(1, 0) + _tmp71 * points_1_(2, 0)) +
+                        normals_1_(2, 0) * (_tmp75 * points_1_(1, 0) + _tmp77 * points_1_(2, 0));
+  const Scalar _tmp81 = 2 * _tmp80;
+  const Scalar _tmp82 = normals_2_(0, 0) * (_tmp25 * points_2_(1, 0) + _tmp67 * points_2_(2, 0)) +
+                        normals_2_(1, 0) * (_tmp10 * points_2_(1, 0) + _tmp71 * points_2_(2, 0)) +
+                        normals_2_(2, 0) * (_tmp75 * points_2_(1, 0) + _tmp77 * points_2_(2, 0));
+  const Scalar _tmp83 = 2 * _tmp82;
+  const Scalar _tmp84 = normals_3_(0, 0) * (_tmp25 * points_3_(1, 0) + _tmp67 * points_3_(2, 0)) +
+                        normals_3_(1, 0) * (_tmp10 * points_3_(1, 0) + _tmp71 * points_3_(2, 0)) +
+                        normals_3_(2, 0) * (_tmp75 * points_3_(1, 0) + _tmp77 * points_3_(2, 0));
+  const Scalar _tmp85 = 2 * _tmp84;
+  const Scalar _tmp86 = normals_4_(0, 0) * (_tmp25 * points_4_(1, 0) + _tmp67 * points_4_(2, 0)) +
+                        normals_4_(1, 0) * (_tmp10 * points_4_(1, 0) + _tmp71 * points_4_(2, 0)) +
+                        normals_4_(2, 0) * (_tmp75 * points_4_(1, 0) + _tmp77 * points_4_(2, 0));
+  const Scalar _tmp87 = 2 * _tmp86;
+  const Scalar _tmp88 = normals_5_(0, 0) * (_tmp25 * points_5_(1, 0) + _tmp67 * points_5_(2, 0)) +
+                        normals_5_(1, 0) * (_tmp10 * points_5_(1, 0) + _tmp71 * points_5_(2, 0)) +
+                        normals_5_(2, 0) * (_tmp75 * points_5_(1, 0) + _tmp77 * points_5_(2, 0));
+  const Scalar _tmp89 = 2 * _tmp88;
+  const Scalar _tmp90 = normals_6_(0, 0) * (_tmp25 * points_6_(1, 0) + _tmp67 * points_6_(2, 0)) +
+                        normals_6_(1, 0) * (_tmp10 * points_6_(1, 0) + _tmp71 * points_6_(2, 0)) +
+                        normals_6_(2, 0) * (_tmp75 * points_6_(1, 0) + _tmp77 * points_6_(2, 0));
+  const Scalar _tmp91 = 2 * _tmp90;
+  const Scalar _tmp92 = normals_7_(0, 0) * (_tmp25 * points_7_(1, 0) + _tmp67 * points_7_(2, 0)) +
+                        normals_7_(1, 0) * (_tmp10 * points_7_(1, 0) + _tmp71 * points_7_(2, 0)) +
+                        normals_7_(2, 0) * (_tmp75 * points_7_(1, 0) + _tmp77 * points_7_(2, 0));
+  const Scalar _tmp93 = 2 * _tmp92;
+  const Scalar _tmp94 = normals_8_(0, 0) * (_tmp25 * points_8_(1, 0) + _tmp67 * points_8_(2, 0)) +
+                        normals_8_(1, 0) * (_tmp10 * points_8_(1, 0) + _tmp71 * points_8_(2, 0)) +
+                        normals_8_(2, 0) * (_tmp75 * points_8_(1, 0) + _tmp77 * points_8_(2, 0));
+  const Scalar _tmp95 = 2 * _tmp42;
+  const Scalar _tmp96 = normals_9_(0, 0) * (_tmp25 * points_9_(1, 0) + _tmp67 * points_9_(2, 0)) +
+                        normals_9_(1, 0) * (_tmp10 * points_9_(1, 0) + _tmp71 * points_9_(2, 0)) +
+                        normals_9_(2, 0) * (_tmp75 * points_9_(1, 0) + _tmp77 * points_9_(2, 0));
+  const Scalar _tmp97 = 2 * _tmp96;
+  const Scalar _tmp98 =
+      normals_10_(0, 0) * (_tmp25 * points_10_(1, 0) + _tmp67 * points_10_(2, 0)) +
+      normals_10_(1, 0) * (_tmp10 * points_10_(1, 0) + _tmp71 * points_10_(2, 0)) +
+      normals_10_(2, 0) * (_tmp75 * points_10_(1, 0) + _tmp77 * points_10_(2, 0));
+  const Scalar _tmp99 = 2 * _tmp98;
+  const Scalar _tmp100 =
+      normals_11_(0, 0) * (_tmp25 * points_11_(1, 0) + _tmp67 * points_11_(2, 0)) +
+      normals_11_(1, 0) * (_tmp10 * points_11_(1, 0) + _tmp71 * points_11_(2, 0)) +
+      normals_11_(2, 0) * (_tmp75 * points_11_(1, 0) + _tmp77 * points_11_(2, 0));
+  const Scalar _tmp101 = 2 * _tmp48;
+  const Scalar _tmp102 =
+      normals_12_(0, 0) * (_tmp25 * points_12_(1, 0) + _tmp67 * points_12_(2, 0)) +
+      normals_12_(1, 0) * (_tmp10 * points_12_(1, 0) + _tmp71 * points_12_(2, 0)) +
+      normals_12_(2, 0) * (_tmp75 * points_12_(1, 0) + _tmp77 * points_12_(2, 0));
+  const Scalar _tmp103 = 2 * _tmp102;
+  const Scalar _tmp104 =
+      normals_13_(0, 0) * (_tmp25 * points_13_(1, 0) + _tmp67 * points_13_(2, 0)) +
+      normals_13_(1, 0) * (_tmp10 * points_13_(1, 0) + _tmp71 * points_13_(2, 0)) +
+      normals_13_(2, 0) * (_tmp75 * points_13_(1, 0) + _tmp77 * points_13_(2, 0));
+  const Scalar _tmp105 = 2 * _tmp52;
+  const Scalar _tmp106 =
+      normals_14_(0, 0) * (_tmp25 * points_14_(1, 0) + _tmp67 * points_14_(2, 0)) +
+      normals_14_(1, 0) * (_tmp10 * points_14_(1, 0) + _tmp71 * points_14_(2, 0)) +
+      normals_14_(2, 0) * (_tmp75 * points_14_(1, 0) + _tmp77 * points_14_(2, 0));
+  const Scalar _tmp107 = 2 * _tmp54;
+  const Scalar _tmp108 =
+      normals_15_(0, 0) * (_tmp25 * points_15_(1, 0) + _tmp67 * points_15_(2, 0)) +
+      normals_15_(1, 0) * (_tmp10 * points_15_(1, 0) + _tmp71 * points_15_(2, 0)) +
+      normals_15_(2, 0) * (_tmp75 * points_15_(1, 0) + _tmp77 * points_15_(2, 0));
+  const Scalar _tmp109 = 2 * _tmp108;
+  const Scalar _tmp110 =
+      normals_16_(0, 0) * (_tmp25 * points_16_(1, 0) + _tmp67 * points_16_(2, 0)) +
+      normals_16_(1, 0) * (_tmp10 * points_16_(1, 0) + _tmp71 * points_16_(2, 0)) +
+      normals_16_(2, 0) * (_tmp75 * points_16_(1, 0) + _tmp77 * points_16_(2, 0));
+  const Scalar _tmp111 = 2 * _tmp110;
+  const Scalar _tmp112 =
+      normals_17_(0, 0) * (_tmp25 * points_17_(1, 0) + _tmp67 * points_17_(2, 0)) +
+      normals_17_(1, 0) * (_tmp10 * points_17_(1, 0) + _tmp71 * points_17_(2, 0)) +
+      normals_17_(2, 0) * (_tmp75 * points_17_(1, 0) + _tmp77 * points_17_(2, 0));
+  const Scalar _tmp113 = 2 * _tmp112;
+  const Scalar _tmp114 =
+      normals_18_(0, 0) * (_tmp25 * points_18_(1, 0) + _tmp67 * points_18_(2, 0)) +
+      normals_18_(1, 0) * (_tmp10 * points_18_(1, 0) + _tmp71 * points_18_(2, 0)) +
+      normals_18_(2, 0) * (_tmp75 * points_18_(1, 0) + _tmp77 * points_18_(2, 0));
+  const Scalar _tmp115 = 2 * _tmp62;
+  const Scalar _tmp116 =
+      normals_19_(0, 0) * (_tmp25 * points_19_(1, 0) + _tmp67 * points_19_(2, 0)) +
+      normals_19_(1, 0) * (_tmp10 * points_19_(1, 0) + _tmp71 * points_19_(2, 0)) +
+      normals_19_(2, 0) * (_tmp75 * points_19_(1, 0) + _tmp77 * points_19_(2, 0));
+  const Scalar _tmp117 = 2 * _tmp116;
+  const Scalar _tmp118 = -_tmp0;
+  const Scalar _tmp119 = _tmp118 + _tmp2;
+  const Scalar _tmp120 = _tmp14 + _tmp70;
+  const Scalar _tmp121 = _tmp119 + _tmp120;
+  const Scalar _tmp122 = _tmp119 + _tmp72;
+  const Scalar _tmp123 = -_tmp18;
+  const Scalar _tmp124 = _tmp123 + _tmp20;
+  const Scalar _tmp125 = _tmp6 + _tmp76;
+  const Scalar _tmp126 =
+      normals_0_(0, 0) * (_tmp122 * points_0_(2, 0) + _tmp124 * points_0_(0, 0)) +
+      normals_0_(1, 0) * (_tmp125 * points_0_(0, 0) + _tmp13 * points_0_(2, 0)) +
+      normals_0_(2, 0) * (_tmp121 * points_0_(0, 0) + _tmp21 * points_0_(2, 0));
+  const Scalar _tmp127 =
+      normals_1_(0, 0) * (_tmp122 * points_1_(2, 0) + _tmp124 * points_1_(0, 0)) +
+      normals_1_(1, 0) * (_tmp125 * points_1_(0, 0) + _tmp13 * points_1_(2, 0)) +
+      normals_1_(2, 0) * (_tmp121 * points_1_(0, 0) + _tmp21 * points_1_(2, 0));
+  const Scalar _tmp128 = 2 * _tmp127;
+  const Scalar _tmp129 =
+      normals_2_(0, 0) * (_tmp122 * points_2_(2, 0) + _tmp124 * points_2_(0, 0)) +
+      normals_2_(1, 0) * (_tmp125 * points_2_(0, 0) + _tmp13 * points_2_(2, 0)) +
+      normals_2_(2, 0) * (_tmp121 * points_2_(0, 0) + _tmp21 * points_2_(2, 0));
+  const Scalar _tmp130 = 2 * _tmp129;
+  const Scalar _tmp131 =
+      normals_3_(0, 0) * (_tmp122 * points_3_(2, 0) + _tmp124 * points_3_(0, 0)) +
+      normals_3_(1, 0) * (_tmp125 * points_3_(0, 0) + _tmp13 * points_3_(2, 0)) +
+      normals_3_(2, 0) * (_tmp121 * points_3_(0, 0) + _tmp21 * points_3_(2, 0));
+  const Scalar _tmp132 = 2 * _tmp131;
+  const Scalar _tmp133 =
+      normals_4_(0, 0) * (_tmp122 * points_4_(2, 0) + _tmp124 * points_4_(0, 0)) +
+      normals_4_(1, 0) * (_tmp125 * points_4_(0, 0) + _tmp13 * points_4_(2, 0)) +
+      normals_4_(2, 0) * (_tmp121 * points_4_(0, 0) + _tmp21 * points_4_(2, 0));
+  const Scalar _tmp134 = 2 * _tmp133;
+  const Scalar _tmp135 =
+      normals_5_(0, 0) * (_tmp122 * points_5_(2, 0) + _tmp124 * points_5_(0, 0)) +
+      normals_5_(1, 0) * (_tmp125 * points_5_(0, 0) + _tmp13 * points_5_(2, 0)) +
+      normals_5_(2, 0) * (_tmp121 * points_5_(0, 0) + _tmp21 * points_5_(2, 0));
+  const Scalar _tmp136 = 2 * _tmp135;
+  const Scalar _tmp137 =
+      normals_6_(0, 0) * (_tmp122 * points_6_(2, 0) + _tmp124 * points_6_(0, 0)) +
+      normals_6_(1, 0) * (_tmp125 * points_6_(0, 0) + _tmp13 * points_6_(2, 0)) +
+      normals_6_(2, 0) * (_tmp121 * points_6_(0, 0) + _tmp21 * points_6_(2, 0));
+  const Scalar _tmp138 = 2 * _tmp137;
+  const Scalar _tmp139 =
+      normals_7_(0, 0) * (_tmp122 * points_7_(2, 0) + _tmp124 * points_7_(0, 0)) +
+      normals_7_(1, 0) * (_tmp125 * points_7_(0, 0) + _tmp13 * points_7_(2, 0)) +
+      normals_7_(2, 0) * (_tmp121 * points_7_(0, 0) + _tmp21 * points_7_(2, 0));
+  const Scalar _tmp140 = 2 * _tmp139;
+  const Scalar _tmp141 =
+      normals_8_(0, 0) * (_tmp122 * points_8_(2, 0) + _tmp124 * points_8_(0, 0)) +
+      normals_8_(1, 0) * (_tmp125 * points_8_(0, 0) + _tmp13 * points_8_(2, 0)) +
+      normals_8_(2, 0) * (_tmp121 * points_8_(0, 0) + _tmp21 * points_8_(2, 0));
+  const Scalar _tmp142 =
+      normals_9_(0, 0) * (_tmp122 * points_9_(2, 0) + _tmp124 * points_9_(0, 0)) +
+      normals_9_(1, 0) * (_tmp125 * points_9_(0, 0) + _tmp13 * points_9_(2, 0)) +
+      normals_9_(2, 0) * (_tmp121 * points_9_(0, 0) + _tmp21 * points_9_(2, 0));
+  const Scalar _tmp143 = 2 * _tmp44;
+  const Scalar _tmp144 =
+      normals_10_(0, 0) * (_tmp122 * points_10_(2, 0) + _tmp124 * points_10_(0, 0)) +
+      normals_10_(1, 0) * (_tmp125 * points_10_(0, 0) + _tmp13 * points_10_(2, 0)) +
+      normals_10_(2, 0) * (_tmp121 * points_10_(0, 0) + _tmp21 * points_10_(2, 0));
+  const Scalar _tmp145 = 2 * _tmp144;
+  const Scalar _tmp146 =
+      normals_11_(0, 0) * (_tmp122 * points_11_(2, 0) + _tmp124 * points_11_(0, 0)) +
+      normals_11_(1, 0) * (_tmp125 * points_11_(0, 0) + _tmp13 * points_11_(2, 0)) +
+      normals_11_(2, 0) * (_tmp121 * points_11_(0, 0) + _tmp21 * points_11_(2, 0));
+  const Scalar _tmp147 = 2 * _tmp146;
+  const Scalar _tmp148 =
+      normals_12_(0, 0) * (_tmp122 * points_12_(2, 0) + _tmp124 * points_12_(0, 0)) +
+      normals_12_(1, 0) * (_tmp125 * points_12_(0, 0) + _tmp13 * points_12_(2, 0)) +
+      normals_12_(2, 0) * (_tmp121 * points_12_(0, 0) + _tmp21 * points_12_(2, 0));
+  const Scalar _tmp149 = 2 * _tmp50;
+  const Scalar _tmp150 =
+      normals_13_(0, 0) * (_tmp122 * points_13_(2, 0) + _tmp124 * points_13_(0, 0)) +
+      normals_13_(1, 0) * (_tmp125 * points_13_(0, 0) + _tmp13 * points_13_(2, 0)) +
+      normals_13_(2, 0) * (_tmp121 * points_13_(0, 0) + _tmp21 * points_13_(2, 0));
+  const Scalar _tmp151 = 2 * _tmp150;
+  const Scalar _tmp152 =
+      normals_14_(0, 0) * (_tmp122 * points_14_(2, 0) + _tmp124 * points_14_(0, 0)) +
+      normals_14_(1, 0) * (_tmp125 * points_14_(0, 0) + _tmp13 * points_14_(2, 0)) +
+      normals_14_(2, 0) * (_tmp121 * points_14_(0, 0) + _tmp21 * points_14_(2, 0));
+  const Scalar _tmp153 = 2 * _tmp152;
+  const Scalar _tmp154 =
+      normals_15_(0, 0) * (_tmp122 * points_15_(2, 0) + _tmp124 * points_15_(0, 0)) +
+      normals_15_(1, 0) * (_tmp125 * points_15_(0, 0) + _tmp13 * points_15_(2, 0)) +
+      normals_15_(2, 0) * (_tmp121 * points_15_(0, 0) + _tmp21 * points_15_(2, 0));
+  const Scalar _tmp155 = 2 * _tmp154;
+  const Scalar _tmp156 =
+      normals_16_(0, 0) * (_tmp122 * points_16_(2, 0) + _tmp124 * points_16_(0, 0)) +
+      normals_16_(1, 0) * (_tmp125 * points_16_(0, 0) + _tmp13 * points_16_(2, 0)) +
+      normals_16_(2, 0) * (_tmp121 * points_16_(0, 0) + _tmp21 * points_16_(2, 0));
+  const Scalar _tmp157 = 2 * _tmp58;
+  const Scalar _tmp158 =
+      normals_17_(0, 0) * (_tmp122 * points_17_(2, 0) + _tmp124 * points_17_(0, 0)) +
+      normals_17_(1, 0) * (_tmp125 * points_17_(0, 0) + _tmp13 * points_17_(2, 0)) +
+      normals_17_(2, 0) * (_tmp121 * points_17_(0, 0) + _tmp21 * points_17_(2, 0));
+  const Scalar _tmp159 = 2 * _tmp60;
+  const Scalar _tmp160 =
+      normals_18_(0, 0) * (_tmp122 * points_18_(2, 0) + _tmp124 * points_18_(0, 0)) +
+      normals_18_(1, 0) * (_tmp125 * points_18_(0, 0) + _tmp13 * points_18_(2, 0)) +
+      normals_18_(2, 0) * (_tmp121 * points_18_(0, 0) + _tmp21 * points_18_(2, 0));
+  const Scalar _tmp161 =
+      normals_19_(0, 0) * (_tmp122 * points_19_(2, 0) + _tmp124 * points_19_(0, 0)) +
+      normals_19_(1, 0) * (_tmp125 * points_19_(0, 0) + _tmp13 * points_19_(2, 0)) +
+      normals_19_(2, 0) * (_tmp121 * points_19_(0, 0) + _tmp21 * points_19_(2, 0));
+  const Scalar _tmp162 = 2 * _tmp64;
+  const Scalar _tmp163 = _tmp120 + _tmp74;
+  const Scalar _tmp164 = _tmp118 + _tmp14 + _tmp69 + _tmp73;
+  const Scalar _tmp165 = _tmp23 + _tmp66;
+  const Scalar _tmp166 = _tmp123 + _tmp19;
+  const Scalar _tmp167 =
+      normals_0_(0, 0) * (_tmp163 * points_0_(1, 0) + _tmp24 * points_0_(0, 0)) +
+      normals_0_(1, 0) * (_tmp164 * points_0_(0, 0) + _tmp165 * points_0_(1, 0)) +
+      normals_0_(2, 0) * (_tmp166 * points_0_(1, 0) + _tmp17 * points_0_(0, 0));
+  const Scalar _tmp168 =
+      normals_1_(0, 0) * (_tmp163 * points_1_(1, 0) + _tmp24 * points_1_(0, 0)) +
+      normals_1_(1, 0) * (_tmp164 * points_1_(0, 0) + _tmp165 * points_1_(1, 0)) +
+      normals_1_(2, 0) * (_tmp166 * points_1_(1, 0) + _tmp17 * points_1_(0, 0));
+  const Scalar _tmp169 = 2 * _tmp168;
+  const Scalar _tmp170 =
+      normals_2_(0, 0) * (_tmp163 * points_2_(1, 0) + _tmp24 * points_2_(0, 0)) +
+      normals_2_(1, 0) * (_tmp164 * points_2_(0, 0) + _tmp165 * points_2_(1, 0)) +
+      normals_2_(2, 0) * (_tmp166 * points_2_(1, 0) + _tmp17 * points_2_(0, 0));
+  const Scalar _tmp171 = 2 * _tmp170;
+  const Scalar _tmp172 =
+      normals_3_(0, 0) * (_tmp163 * points_3_(1, 0) + _tmp24 * points_3_(0, 0)) +
+      normals_3_(1, 0) * (_tmp164 * points_3_(0, 0) + _tmp165 * points_3_(1, 0)) +
+      normals_3_(2, 0) * (_tmp166 * points_3_(1, 0) + _tmp17 * points_3_(0, 0));
+  const Scalar _tmp173 = 2 * _tmp172;
+  const Scalar _tmp174 =
+      normals_4_(0, 0) * (_tmp163 * points_4_(1, 0) + _tmp24 * points_4_(0, 0)) +
+      normals_4_(1, 0) * (_tmp164 * points_4_(0, 0) + _tmp165 * points_4_(1, 0)) +
+      normals_4_(2, 0) * (_tmp166 * points_4_(1, 0) + _tmp17 * points_4_(0, 0));
+  const Scalar _tmp175 = 2 * _tmp174;
+  const Scalar _tmp176 =
+      normals_5_(0, 0) * (_tmp163 * points_5_(1, 0) + _tmp24 * points_5_(0, 0)) +
+      normals_5_(1, 0) * (_tmp164 * points_5_(0, 0) + _tmp165 * points_5_(1, 0)) +
+      normals_5_(2, 0) * (_tmp166 * points_5_(1, 0) + _tmp17 * points_5_(0, 0));
+  const Scalar _tmp177 = 2 * _tmp176;
+  const Scalar _tmp178 =
+      normals_6_(0, 0) * (_tmp163 * points_6_(1, 0) + _tmp24 * points_6_(0, 0)) +
+      normals_6_(1, 0) * (_tmp164 * points_6_(0, 0) + _tmp165 * points_6_(1, 0)) +
+      normals_6_(2, 0) * (_tmp166 * points_6_(1, 0) + _tmp17 * points_6_(0, 0));
+  const Scalar _tmp179 = 2 * _tmp178;
+  const Scalar _tmp180 =
+      normals_7_(0, 0) * (_tmp163 * points_7_(1, 0) + _tmp24 * points_7_(0, 0)) +
+      normals_7_(1, 0) * (_tmp164 * points_7_(0, 0) + _tmp165 * points_7_(1, 0)) +
+      normals_7_(2, 0) * (_tmp166 * points_7_(1, 0) + _tmp17 * points_7_(0, 0));
+  const Scalar _tmp181 = 2 * _tmp180;
+  const Scalar _tmp182 =
+      normals_8_(0, 0) * (_tmp163 * points_8_(1, 0) + _tmp24 * points_8_(0, 0)) +
+      normals_8_(1, 0) * (_tmp164 * points_8_(0, 0) + _tmp165 * points_8_(1, 0)) +
+      normals_8_(2, 0) * (_tmp166 * points_8_(1, 0) + _tmp17 * points_8_(0, 0));
+  const Scalar _tmp183 =
+      normals_9_(0, 0) * (_tmp163 * points_9_(1, 0) + _tmp24 * points_9_(0, 0)) +
+      normals_9_(1, 0) * (_tmp164 * points_9_(0, 0) + _tmp165 * points_9_(1, 0)) +
+      normals_9_(2, 0) * (_tmp166 * points_9_(1, 0) + _tmp17 * points_9_(0, 0));
+  const Scalar _tmp184 =
+      normals_10_(0, 0) * (_tmp163 * points_10_(1, 0) + _tmp24 * points_10_(0, 0)) +
+      normals_10_(1, 0) * (_tmp164 * points_10_(0, 0) + _tmp165 * points_10_(1, 0)) +
+      normals_10_(2, 0) * (_tmp166 * points_10_(1, 0) + _tmp17 * points_10_(0, 0));
+  const Scalar _tmp185 = 2 * _tmp184;
+  const Scalar _tmp186 =
+      normals_11_(0, 0) * (_tmp163 * points_11_(1, 0) + _tmp24 * points_11_(0, 0)) +
+      normals_11_(1, 0) * (_tmp164 * points_11_(0, 0) + _tmp165 * points_11_(1, 0)) +
+      normals_11_(2, 0) * (_tmp166 * points_11_(1, 0) + _tmp17 * points_11_(0, 0));
+  const Scalar _tmp187 = 2 * _tmp186;
+  const Scalar _tmp188 =
+      normals_12_(0, 0) * (_tmp163 * points_12_(1, 0) + _tmp24 * points_12_(0, 0)) +
+      normals_12_(1, 0) * (_tmp164 * points_12_(0, 0) + _tmp165 * points_12_(1, 0)) +
+      normals_12_(2, 0) * (_tmp166 * points_12_(1, 0) + _tmp17 * points_12_(0, 0));
+  const Scalar _tmp189 =
+      normals_13_(0, 0) * (_tmp163 * points_13_(1, 0) + _tmp24 * points_13_(0, 0)) +
+      normals_13_(1, 0) * (_tmp164 * points_13_(0, 0) + _tmp165 * points_13_(1, 0)) +
+      normals_13_(2, 0) * (_tmp166 * points_13_(1, 0) + _tmp17 * points_13_(0, 0));
+  const Scalar _tmp190 =
+      normals_14_(0, 0) * (_tmp163 * points_14_(1, 0) + _tmp24 * points_14_(0, 0)) +
+      normals_14_(1, 0) * (_tmp164 * points_14_(0, 0) + _tmp165 * points_14_(1, 0)) +
+      normals_14_(2, 0) * (_tmp166 * points_14_(1, 0) + _tmp17 * points_14_(0, 0));
+  const Scalar _tmp191 =
+      normals_15_(0, 0) * (_tmp163 * points_15_(1, 0) + _tmp24 * points_15_(0, 0)) +
+      normals_15_(1, 0) * (_tmp164 * points_15_(0, 0) + _tmp165 * points_15_(1, 0)) +
+      normals_15_(2, 0) * (_tmp166 * points_15_(1, 0) + _tmp17 * points_15_(0, 0));
+  const Scalar _tmp192 = 2 * _tmp56;
+  const Scalar _tmp193 =
+      normals_16_(0, 0) * (_tmp163 * points_16_(1, 0) + _tmp24 * points_16_(0, 0)) +
+      normals_16_(1, 0) * (_tmp164 * points_16_(0, 0) + _tmp165 * points_16_(1, 0)) +
+      normals_16_(2, 0) * (_tmp166 * points_16_(1, 0) + _tmp17 * points_16_(0, 0));
+  const Scalar _tmp194 = 2 * _tmp193;
+  const Scalar _tmp195 =
+      normals_17_(0, 0) * (_tmp163 * points_17_(1, 0) + _tmp24 * points_17_(0, 0)) +
+      normals_17_(1, 0) * (_tmp164 * points_17_(0, 0) + _tmp165 * points_17_(1, 0)) +
+      normals_17_(2, 0) * (_tmp166 * points_17_(1, 0) + _tmp17 * points_17_(0, 0));
+  const Scalar _tmp196 = 2 * _tmp195;
+  const Scalar _tmp197 =
+      normals_18_(0, 0) * (_tmp163 * points_18_(1, 0) + _tmp24 * points_18_(0, 0)) +
+      normals_18_(1, 0) * (_tmp164 * points_18_(0, 0) + _tmp165 * points_18_(1, 0)) +
+      normals_18_(2, 0) * (_tmp166 * points_18_(1, 0) + _tmp17 * points_18_(0, 0));
+  const Scalar _tmp198 =
+      normals_19_(0, 0) * (_tmp163 * points_19_(1, 0) + _tmp24 * points_19_(0, 0)) +
+      normals_19_(1, 0) * (_tmp164 * points_19_(0, 0) + _tmp165 * points_19_(1, 0)) +
+      normals_19_(2, 0) * (_tmp166 * points_19_(1, 0) + _tmp17 * points_19_(0, 0));
+  const Scalar _tmp199 = 2 * normals_1_(0, 0);
+  const Scalar _tmp200 = 2 * normals_2_(0, 0);
+  const Scalar _tmp201 = 2 * normals_3_(0, 0);
+  const Scalar _tmp202 = 2 * normals_4_(0, 0);
+  const Scalar _tmp203 = 2 * normals_5_(0, 0);
+  const Scalar _tmp204 = 2 * normals_6_(0, 0);
+  const Scalar _tmp205 = 2 * normals_7_(0, 0);
+  const Scalar _tmp206 = 2 * normals_9_(0, 0);
+  const Scalar _tmp207 = 2 * _tmp46;
+  const Scalar _tmp208 = 2 * normals_1_(1, 0);
+  const Scalar _tmp209 = 2 * normals_2_(1, 0);
+  const Scalar _tmp210 = 2 * normals_3_(1, 0);
+  const Scalar _tmp211 = 2 * normals_4_(1, 0);
+  const Scalar _tmp212 = 2 * normals_5_(1, 0);
+  const Scalar _tmp213 = 2 * normals_6_(1, 0);
+  const Scalar _tmp214 = 2 * normals_7_(1, 0);
+  const Scalar _tmp215 = 2 * normals_1_(2, 0);
+  const Scalar _tmp216 = 2 * normals_2_(2, 0);
+  const Scalar _tmp217 = 2 * normals_3_(2, 0);
+  const Scalar _tmp218 = 2 * normals_4_(2, 0);
+  const Scalar _tmp219 = 2 * normals_5_(2, 0);
+  const Scalar _tmp220 = 2 * normals_6_(2, 0);
+  const Scalar _tmp221 = 2 * normals_7_(2, 0);
+  const Scalar _tmp222 = 4 * _tmp37;
+  const Scalar _tmp223 = 4 * _tmp49;
+  const Scalar _tmp224 = 4 * _tmp27;
+  const Scalar _tmp225 = 4 * _tmp43;
+  const Scalar _tmp226 = 4 * _tmp61;
+  const Scalar _tmp227 = 4 * _tmp51;
+  const Scalar _tmp228 = 4 * _tmp53;
+  const Scalar _tmp229 = 4 * _tmp35;
+  const Scalar _tmp230 = 4 * _tmp63;
+  const Scalar _tmp231 = 4 * _tmp47;
+  const Scalar _tmp232 = 4 * _tmp33;
+  const Scalar _tmp233 = 4 * _tmp31;
+  const Scalar _tmp234 = 4 * _tmp41;
+  const Scalar _tmp235 = 4 * _tmp55;
+  const Scalar _tmp236 = 4 * _tmp65;
+  const Scalar _tmp237 = 4 * _tmp29;
+  const Scalar _tmp238 = 4 * _tmp39;
+  const Scalar _tmp239 = 4 * _tmp57;
+  const Scalar _tmp240 = 4 * _tmp45;
+  const Scalar _tmp241 = 4 * _tmp59;
+  const Scalar _tmp242 = _tmp142 * _tmp240;
+  const Scalar _tmp243 = _tmp129 * _tmp233;
+  const Scalar _tmp244 = _tmp133 * _tmp229;
+  const Scalar _tmp245 = _tmp144 * _tmp231;
+  const Scalar _tmp246 = _tmp224 * _tmp78;
+  const Scalar _tmp247 = _tmp154 * _tmp239;
+  const Scalar _tmp248 = _tmp232 * _tmp84;
+  const Scalar _tmp249 = _tmp225 * _tmp94;
+  const Scalar _tmp250 = _tmp135 * _tmp222;
+  const Scalar _tmp251 = _tmp158 * _tmp226;
+  const Scalar _tmp252 = _tmp110 * _tmp241;
+  const Scalar _tmp253 = _tmp102 * _tmp227;
+  const Scalar _tmp254 = _tmp106 * _tmp235;
+  const Scalar _tmp255 = _tmp116 * _tmp236;
+  const Scalar _tmp256 = _tmp139 * _tmp234;
+  const Scalar _tmp257 = _tmp237 * _tmp80;
+  const Scalar _tmp258 = _tmp238 * _tmp90;
+  const Scalar _tmp259 = _tmp114 * _tmp230;
+  const Scalar _tmp260 = _tmp146 * _tmp223;
+  const Scalar _tmp261 = _tmp150 * _tmp228;
+  const Scalar _tmp262 = _tmp100 * _tmp223;
+  const Scalar _tmp263 = _tmp184 * _tmp231;
+  const Scalar _tmp264 = _tmp193 * _tmp241;
+  const Scalar _tmp265 = _tmp195 * _tmp226;
+  const Scalar _tmp266 = _tmp197 * _tmp230;
+  const Scalar _tmp267 = _tmp233 * _tmp82;
+  const Scalar _tmp268 = _tmp191 * _tmp239;
+  const Scalar _tmp269 = _tmp189 * _tmp228;
+  const Scalar _tmp270 = _tmp240 * _tmp96;
+  const Scalar _tmp271 = _tmp190 * _tmp235;
+  const Scalar _tmp272 = _tmp174 * _tmp229;
+  const Scalar _tmp273 = _tmp180 * _tmp234;
+  const Scalar _tmp274 = _tmp176 * _tmp222;
+  const Scalar _tmp275 = _tmp236 * normals_19_(0, 0);
+  const Scalar _tmp276 = _tmp226 * normals_17_(0, 0);
+  const Scalar _tmp277 = _tmp231 * normals_10_(0, 0);
+  const Scalar _tmp278 = _tmp229 * normals_4_(0, 0);
+  const Scalar _tmp279 = _tmp228 * normals_13_(0, 0);
+  const Scalar _tmp280 = _tmp222 * normals_5_(0, 0);
+  const Scalar _tmp281 = _tmp234 * normals_7_(0, 0);
+  const Scalar _tmp282 = _tmp108 * _tmp239;
+  const Scalar _tmp283 = _tmp230 * normals_18_(0, 0);
+  const Scalar _tmp284 = _tmp236 * normals_19_(1, 0);
+  const Scalar _tmp285 = _tmp223 * normals_11_(1, 0);
+  const Scalar _tmp286 = _tmp234 * normals_7_(1, 0);
+  const Scalar _tmp287 = _tmp236 * normals_19_(2, 0);
+  const Scalar _tmp288 = _tmp226 * normals_17_(2, 0);
+  const Scalar _tmp289 = _tmp231 * normals_10_(2, 0);
+  const Scalar _tmp290 = _tmp229 * normals_4_(2, 0);
+  const Scalar _tmp291 = _tmp228 * normals_13_(2, 0);
+  const Scalar _tmp292 = _tmp222 * normals_5_(2, 0);
+  const Scalar _tmp293 = _tmp223 * normals_11_(2, 0);
+  const Scalar _tmp294 = _tmp182 * _tmp225;
+  const Scalar _tmp295 = _tmp172 * _tmp232;
+  const Scalar _tmp296 = _tmp167 * _tmp224;
+  const Scalar _tmp297 = _tmp168 * _tmp237;
+  const Scalar _tmp298 = _tmp188 * _tmp227;
+  const Scalar _tmp299 = _tmp241 * normals_16_(0, 0);
+  const Scalar _tmp300 = _tmp127 * _tmp237;
+  const Scalar _tmp301 = _tmp227 * normals_12_(0, 0);
+  const Scalar _tmp302 = _tmp235 * normals_14_(0, 0);
+  const Scalar _tmp303 = _tmp141 * _tmp225;
+  const Scalar _tmp304 = _tmp131 * _tmp232;
+  const Scalar _tmp305 = _tmp238 * normals_6_(0, 0);
+  const Scalar _tmp306 = _tmp126 * _tmp224;
+  const Scalar _tmp307 = _tmp241 * normals_16_(1, 0);
+  const Scalar _tmp308 = _tmp235 * normals_14_(1, 0);
+  const Scalar _tmp309 = _tmp238 * normals_6_(1, 0);
+  const Scalar _tmp310 = _tmp160 * _tmp230;
+  const Scalar _tmp311 = _tmp227 * normals_12_(2, 0);
+  const Scalar _tmp312 = _tmp238 * normals_6_(2, 0);
+  const Scalar _tmp313 = _tmp233 * normals_2_(0, 0);
+  const Scalar _tmp314 = _tmp240 * normals_9_(0, 0);
+  const Scalar _tmp315 = _tmp233 * normals_2_(1, 0);
+  const Scalar _tmp316 = _tmp240 * normals_9_(1, 0);
+  const Scalar _tmp317 = _tmp224 * normals_0_(1, 0);
+  const Scalar _tmp318 = _tmp232 * normals_3_(0, 0);
+  const Scalar _tmp319 = _tmp237 * normals_1_(0, 0);
+  const Scalar _tmp320 = _tmp225 * normals_8_(0, 0);
+  const Scalar _tmp321 = _tmp239 * normals_15_(1, 0);
+  const Scalar _tmp322 = [&]() {
+    const Scalar base = _tmp36;
+    return base * base * base;
+  }();
+  const Scalar _tmp323 = [&]() {
+    const Scalar base = _tmp48;
+    return base * base * base;
+  }();
+  const Scalar _tmp324 = 2 * _tmp323;
+  const Scalar _tmp325 = 2 * [&]() {
+    const Scalar base = _tmp26;
+    return base * base * base;
+  }();
+  const Scalar _tmp326 = 2 * [&]() {
+    const Scalar base = _tmp42;
+    return base * base * base;
+  }();
+  const Scalar _tmp327 = [&]() {
+    const Scalar base = _tmp60;
+    return base * base * base;
+  }();
+  const Scalar _tmp328 = [&]() {
+    const Scalar base = _tmp50;
+    return base * base * base;
+  }();
+  const Scalar _tmp329 = [&]() {
+    const Scalar base = _tmp52;
+    return base * base * base;
+  }();
+  const Scalar _tmp330 = 2 * _tmp329;
+  const Scalar _tmp331 = [&]() {
+    const Scalar base = _tmp34;
+    return base * base * base;
+  }();
+  const Scalar _tmp332 = 2 * [&]() {
+    const Scalar base = _tmp62;
+    return base * base * base;
+  }();
+  const Scalar _tmp333 = [&]() {
+    const Scalar base = _tmp46;
+    return base * base * base;
+  }();
+  const Scalar _tmp334 = [&]() {
+    const Scalar base = _tmp32;
+    return base * base * base;
+  }();
+  const Scalar _tmp335 = [&]() {
+    const Scalar base = _tmp30;
+    return base * base * base;
+  }();
+  const Scalar _tmp336 = [&]() {
+    const Scalar base = _tmp40;
+    return base * base * base;
+  }();
+  const Scalar _tmp337 = [&]() {
+    const Scalar base = _tmp54;
+    return base * base * base;
+  }();
+  const Scalar _tmp338 = 2 * _tmp337;
+  const Scalar _tmp339 = [&]() {
+    const Scalar base = _tmp64;
+    return base * base * base;
+  }();
+  const Scalar _tmp340 = [&]() {
+    const Scalar base = _tmp28;
+    return base * base * base;
+  }();
+  const Scalar _tmp341 = [&]() {
+    const Scalar base = _tmp38;
+    return base * base * base;
+  }();
+  const Scalar _tmp342 = [&]() {
+    const Scalar base = _tmp56;
+    return base * base * base;
+  }();
+  const Scalar _tmp343 = [&]() {
+    const Scalar base = _tmp44;
+    return base * base * base;
+  }();
+  const Scalar _tmp344 = [&]() {
+    const Scalar base = _tmp58;
+    return base * base * base;
+  }();
+  const Scalar _tmp345 = 2 * _tmp328;
+  const Scalar _tmp346 = 2 * _tmp343;
+  const Scalar _tmp347 = 2 * _tmp344;
+  const Scalar _tmp348 = 2 * _tmp339;
+  const Scalar _tmp349 = 2 * _tmp327;
+  const Scalar _tmp350 = 2 * _tmp342;
+  const Scalar _tmp351 = 2 * _tmp333;
 
   // Output terms (4)
   if (residual != nullptr) {
-    Eigen::Matrix<Scalar, 1, 1>& _residual = (*residual);
+    Eigen::Matrix<Scalar, 20, 1>& _residual = (*residual);
 
-    _residual(0, 0) = _tmp29;
+    _residual(0, 0) = _tmp27;
+    _residual(1, 0) = _tmp29;
+    _residual(2, 0) = _tmp31;
+    _residual(3, 0) = _tmp33;
+    _residual(4, 0) = _tmp35;
+    _residual(5, 0) = _tmp37;
+    _residual(6, 0) = _tmp39;
+    _residual(7, 0) = _tmp41;
+    _residual(8, 0) = _tmp43;
+    _residual(9, 0) = _tmp45;
+    _residual(10, 0) = _tmp47;
+    _residual(11, 0) = _tmp49;
+    _residual(12, 0) = _tmp51;
+    _residual(13, 0) = _tmp53;
+    _residual(14, 0) = _tmp55;
+    _residual(15, 0) = _tmp57;
+    _residual(16, 0) = _tmp59;
+    _residual(17, 0) = _tmp61;
+    _residual(18, 0) = _tmp63;
+    _residual(19, 0) = _tmp65;
   }
 
   if (jacobian != nullptr) {
-    Eigen::Matrix<Scalar, 1, 6>& _jacobian = (*jacobian);
+    Eigen::Matrix<Scalar, 20, 6>& _jacobian = (*jacobian);
 
-    _jacobian(0, 0) = _tmp30 * _tmp46;
-    _jacobian(0, 1) = _tmp30 * _tmp56;
-    _jacobian(0, 2) = _tmp30 * _tmp62;
-    _jacobian(0, 3) = _tmp30 * _tmp64;
-    _jacobian(0, 4) = _tmp30 * _tmp66;
-    _jacobian(0, 5) = _tmp30 * _tmp68;
+    _jacobian(0, 0) = _tmp78 * _tmp79;
+    _jacobian(1, 0) = _tmp28 * _tmp81;
+    _jacobian(2, 0) = _tmp30 * _tmp83;
+    _jacobian(3, 0) = _tmp32 * _tmp85;
+    _jacobian(4, 0) = _tmp34 * _tmp87;
+    _jacobian(5, 0) = _tmp36 * _tmp89;
+    _jacobian(6, 0) = _tmp38 * _tmp91;
+    _jacobian(7, 0) = _tmp40 * _tmp93;
+    _jacobian(8, 0) = _tmp94 * _tmp95;
+    _jacobian(9, 0) = _tmp44 * _tmp97;
+    _jacobian(10, 0) = _tmp46 * _tmp99;
+    _jacobian(11, 0) = _tmp100 * _tmp101;
+    _jacobian(12, 0) = _tmp103 * _tmp50;
+    _jacobian(13, 0) = _tmp104 * _tmp105;
+    _jacobian(14, 0) = _tmp106 * _tmp107;
+    _jacobian(15, 0) = _tmp109 * _tmp56;
+    _jacobian(16, 0) = _tmp111 * _tmp58;
+    _jacobian(17, 0) = _tmp113 * _tmp60;
+    _jacobian(18, 0) = _tmp114 * _tmp115;
+    _jacobian(19, 0) = _tmp117 * _tmp64;
+    _jacobian(0, 1) = _tmp126 * _tmp79;
+    _jacobian(1, 1) = _tmp128 * _tmp28;
+    _jacobian(2, 1) = _tmp130 * _tmp30;
+    _jacobian(3, 1) = _tmp132 * _tmp32;
+    _jacobian(4, 1) = _tmp134 * _tmp34;
+    _jacobian(5, 1) = _tmp136 * _tmp36;
+    _jacobian(6, 1) = _tmp138 * _tmp38;
+    _jacobian(7, 1) = _tmp140 * _tmp40;
+    _jacobian(8, 1) = _tmp141 * _tmp95;
+    _jacobian(9, 1) = _tmp142 * _tmp143;
+    _jacobian(10, 1) = _tmp145 * _tmp46;
+    _jacobian(11, 1) = _tmp147 * _tmp48;
+    _jacobian(12, 1) = _tmp148 * _tmp149;
+    _jacobian(13, 1) = _tmp151 * _tmp52;
+    _jacobian(14, 1) = _tmp153 * _tmp54;
+    _jacobian(15, 1) = _tmp155 * _tmp56;
+    _jacobian(16, 1) = _tmp156 * _tmp157;
+    _jacobian(17, 1) = _tmp158 * _tmp159;
+    _jacobian(18, 1) = _tmp115 * _tmp160;
+    _jacobian(19, 1) = _tmp161 * _tmp162;
+    _jacobian(0, 2) = _tmp167 * _tmp79;
+    _jacobian(1, 2) = _tmp169 * _tmp28;
+    _jacobian(2, 2) = _tmp171 * _tmp30;
+    _jacobian(3, 2) = _tmp173 * _tmp32;
+    _jacobian(4, 2) = _tmp175 * _tmp34;
+    _jacobian(5, 2) = _tmp177 * _tmp36;
+    _jacobian(6, 2) = _tmp179 * _tmp38;
+    _jacobian(7, 2) = _tmp181 * _tmp40;
+    _jacobian(8, 2) = _tmp182 * _tmp95;
+    _jacobian(9, 2) = _tmp143 * _tmp183;
+    _jacobian(10, 2) = _tmp185 * _tmp46;
+    _jacobian(11, 2) = _tmp187 * _tmp48;
+    _jacobian(12, 2) = _tmp149 * _tmp188;
+    _jacobian(13, 2) = _tmp105 * _tmp189;
+    _jacobian(14, 2) = _tmp107 * _tmp190;
+    _jacobian(15, 2) = _tmp191 * _tmp192;
+    _jacobian(16, 2) = _tmp194 * _tmp58;
+    _jacobian(17, 2) = _tmp196 * _tmp60;
+    _jacobian(18, 2) = _tmp115 * _tmp197;
+    _jacobian(19, 2) = _tmp162 * _tmp198;
+    _jacobian(0, 3) = _tmp79 * normals_0_(0, 0);
+    _jacobian(1, 3) = _tmp199 * _tmp28;
+    _jacobian(2, 3) = _tmp200 * _tmp30;
+    _jacobian(3, 3) = _tmp201 * _tmp32;
+    _jacobian(4, 3) = _tmp202 * _tmp34;
+    _jacobian(5, 3) = _tmp203 * _tmp36;
+    _jacobian(6, 3) = _tmp204 * _tmp38;
+    _jacobian(7, 3) = _tmp205 * _tmp40;
+    _jacobian(8, 3) = _tmp95 * normals_8_(0, 0);
+    _jacobian(9, 3) = _tmp206 * _tmp44;
+    _jacobian(10, 3) = _tmp207 * normals_10_(0, 0);
+    _jacobian(11, 3) = _tmp101 * normals_11_(0, 0);
+    _jacobian(12, 3) = _tmp149 * normals_12_(0, 0);
+    _jacobian(13, 3) = _tmp105 * normals_13_(0, 0);
+    _jacobian(14, 3) = _tmp107 * normals_14_(0, 0);
+    _jacobian(15, 3) = _tmp192 * normals_15_(0, 0);
+    _jacobian(16, 3) = _tmp157 * normals_16_(0, 0);
+    _jacobian(17, 3) = _tmp159 * normals_17_(0, 0);
+    _jacobian(18, 3) = _tmp115 * normals_18_(0, 0);
+    _jacobian(19, 3) = _tmp162 * normals_19_(0, 0);
+    _jacobian(0, 4) = _tmp79 * normals_0_(1, 0);
+    _jacobian(1, 4) = _tmp208 * _tmp28;
+    _jacobian(2, 4) = _tmp209 * _tmp30;
+    _jacobian(3, 4) = _tmp210 * _tmp32;
+    _jacobian(4, 4) = _tmp211 * _tmp34;
+    _jacobian(5, 4) = _tmp212 * _tmp36;
+    _jacobian(6, 4) = _tmp213 * _tmp38;
+    _jacobian(7, 4) = _tmp214 * _tmp40;
+    _jacobian(8, 4) = _tmp95 * normals_8_(1, 0);
+    _jacobian(9, 4) = _tmp143 * normals_9_(1, 0);
+    _jacobian(10, 4) = _tmp207 * normals_10_(1, 0);
+    _jacobian(11, 4) = _tmp101 * normals_11_(1, 0);
+    _jacobian(12, 4) = _tmp149 * normals_12_(1, 0);
+    _jacobian(13, 4) = _tmp105 * normals_13_(1, 0);
+    _jacobian(14, 4) = _tmp107 * normals_14_(1, 0);
+    _jacobian(15, 4) = _tmp192 * normals_15_(1, 0);
+    _jacobian(16, 4) = _tmp157 * normals_16_(1, 0);
+    _jacobian(17, 4) = _tmp159 * normals_17_(1, 0);
+    _jacobian(18, 4) = _tmp115 * normals_18_(1, 0);
+    _jacobian(19, 4) = _tmp162 * normals_19_(1, 0);
+    _jacobian(0, 5) = _tmp79 * normals_0_(2, 0);
+    _jacobian(1, 5) = _tmp215 * _tmp28;
+    _jacobian(2, 5) = _tmp216 * _tmp30;
+    _jacobian(3, 5) = _tmp217 * _tmp32;
+    _jacobian(4, 5) = _tmp218 * _tmp34;
+    _jacobian(5, 5) = _tmp219 * _tmp36;
+    _jacobian(6, 5) = _tmp220 * _tmp38;
+    _jacobian(7, 5) = _tmp221 * _tmp40;
+    _jacobian(8, 5) = _tmp95 * normals_8_(2, 0);
+    _jacobian(9, 5) = _tmp143 * normals_9_(2, 0);
+    _jacobian(10, 5) = _tmp207 * normals_10_(2, 0);
+    _jacobian(11, 5) = _tmp101 * normals_11_(2, 0);
+    _jacobian(12, 5) = _tmp149 * normals_12_(2, 0);
+    _jacobian(13, 5) = _tmp105 * normals_13_(2, 0);
+    _jacobian(14, 5) = _tmp107 * normals_14_(2, 0);
+    _jacobian(15, 5) = _tmp192 * normals_15_(2, 0);
+    _jacobian(16, 5) = _tmp157 * normals_16_(2, 0);
+    _jacobian(17, 5) = _tmp159 * normals_17_(2, 0);
+    _jacobian(18, 5) = _tmp115 * normals_18_(2, 0);
+    _jacobian(19, 5) = _tmp162 * normals_19_(2, 0);
   }
 
   if (hessian != nullptr) {
     Eigen::Matrix<Scalar, 6, 6>& _hessian = (*hessian);
 
-    _hessian(0, 0) = std::pow(_tmp45, Scalar(2)) * _tmp69;
-    _hessian(1, 0) = _tmp55 * _tmp70;
-    _hessian(2, 0) = _tmp61 * _tmp70;
-    _hessian(3, 0) = _tmp63 * _tmp70;
-    _hessian(4, 0) = _tmp65 * _tmp70;
-    _hessian(5, 0) = _tmp67 * _tmp70;
+    _hessian(0, 0) =
+        std::pow(_tmp100, Scalar(2)) * _tmp223 + std::pow(_tmp102, Scalar(2)) * _tmp227 +
+        std::pow(_tmp104, Scalar(2)) * _tmp228 + std::pow(_tmp106, Scalar(2)) * _tmp235 +
+        std::pow(_tmp108, Scalar(2)) * _tmp239 + std::pow(_tmp110, Scalar(2)) * _tmp241 +
+        std::pow(_tmp112, Scalar(2)) * _tmp226 + std::pow(_tmp114, Scalar(2)) * _tmp230 +
+        std::pow(_tmp116, Scalar(2)) * _tmp236 + _tmp222 * std::pow(_tmp88, Scalar(2)) +
+        _tmp224 * std::pow(_tmp78, Scalar(2)) + _tmp225 * std::pow(_tmp94, Scalar(2)) +
+        _tmp229 * std::pow(_tmp86, Scalar(2)) + _tmp231 * std::pow(_tmp98, Scalar(2)) +
+        _tmp232 * std::pow(_tmp84, Scalar(2)) + _tmp233 * std::pow(_tmp82, Scalar(2)) +
+        _tmp234 * std::pow(_tmp92, Scalar(2)) + _tmp237 * std::pow(_tmp80, Scalar(2)) +
+        _tmp238 * std::pow(_tmp90, Scalar(2)) + _tmp240 * std::pow(_tmp96, Scalar(2));
+    _hessian(1, 0) = _tmp100 * _tmp260 + _tmp104 * _tmp261 + _tmp108 * _tmp247 + _tmp112 * _tmp251 +
+                     _tmp126 * _tmp246 + _tmp127 * _tmp257 + _tmp131 * _tmp248 + _tmp137 * _tmp258 +
+                     _tmp141 * _tmp249 + _tmp148 * _tmp253 + _tmp152 * _tmp254 + _tmp156 * _tmp252 +
+                     _tmp160 * _tmp259 + _tmp161 * _tmp255 + _tmp242 * _tmp96 + _tmp243 * _tmp82 +
+                     _tmp244 * _tmp86 + _tmp245 * _tmp98 + _tmp250 * _tmp88 + _tmp256 * _tmp92;
+    _hessian(2, 0) = _tmp104 * _tmp269 + _tmp106 * _tmp271 + _tmp108 * _tmp268 + _tmp110 * _tmp264 +
+                     _tmp112 * _tmp265 + _tmp114 * _tmp266 + _tmp167 * _tmp246 + _tmp168 * _tmp257 +
+                     _tmp170 * _tmp267 + _tmp172 * _tmp248 + _tmp178 * _tmp258 + _tmp182 * _tmp249 +
+                     _tmp183 * _tmp270 + _tmp186 * _tmp262 + _tmp188 * _tmp253 + _tmp198 * _tmp255 +
+                     _tmp263 * _tmp98 + _tmp272 * _tmp86 + _tmp273 * _tmp92 + _tmp274 * _tmp88;
+    _hessian(3, 0) =
+        _tmp104 * _tmp279 + _tmp112 * _tmp276 + _tmp114 * _tmp283 + _tmp116 * _tmp275 +
+        _tmp246 * normals_0_(0, 0) + _tmp248 * normals_3_(0, 0) + _tmp249 * normals_8_(0, 0) +
+        _tmp252 * normals_16_(0, 0) + _tmp253 * normals_12_(0, 0) + _tmp254 * normals_14_(0, 0) +
+        _tmp257 * normals_1_(0, 0) + _tmp258 * normals_6_(0, 0) + _tmp262 * normals_11_(0, 0) +
+        _tmp267 * normals_2_(0, 0) + _tmp270 * normals_9_(0, 0) + _tmp277 * _tmp98 +
+        _tmp278 * _tmp86 + _tmp280 * _tmp88 + _tmp281 * _tmp92 + _tmp282 * normals_15_(0, 0);
+    _hessian(4, 0) =
+        _tmp100 * _tmp285 + _tmp104 * _tmp228 * normals_13_(1, 0) +
+        _tmp112 * _tmp226 * normals_17_(1, 0) + _tmp116 * _tmp284 +
+        _tmp222 * _tmp88 * normals_5_(1, 0) + _tmp229 * _tmp86 * normals_4_(1, 0) +
+        _tmp231 * _tmp98 * normals_10_(1, 0) + _tmp246 * normals_0_(1, 0) +
+        _tmp248 * normals_3_(1, 0) + _tmp249 * normals_8_(1, 0) + _tmp252 * normals_16_(1, 0) +
+        _tmp253 * normals_12_(1, 0) + _tmp254 * normals_14_(1, 0) + _tmp257 * normals_1_(1, 0) +
+        _tmp258 * normals_6_(1, 0) + _tmp259 * normals_18_(1, 0) + _tmp267 * normals_2_(1, 0) +
+        _tmp270 * normals_9_(1, 0) + _tmp282 * normals_15_(1, 0) + _tmp286 * _tmp92;
+    _hessian(5, 0) =
+        _tmp100 * _tmp293 + _tmp104 * _tmp291 + _tmp112 * _tmp288 + _tmp116 * _tmp287 +
+        _tmp234 * _tmp92 * normals_7_(2, 0) + _tmp246 * normals_0_(2, 0) +
+        _tmp248 * normals_3_(2, 0) + _tmp249 * normals_8_(2, 0) + _tmp252 * normals_16_(2, 0) +
+        _tmp253 * normals_12_(2, 0) + _tmp254 * normals_14_(2, 0) + _tmp257 * normals_1_(2, 0) +
+        _tmp258 * normals_6_(2, 0) + _tmp259 * normals_18_(2, 0) + _tmp267 * normals_2_(2, 0) +
+        _tmp270 * normals_9_(2, 0) + _tmp282 * normals_15_(2, 0) + _tmp289 * _tmp98 +
+        _tmp290 * _tmp86 + _tmp292 * _tmp88;
     _hessian(0, 1) = 0;
-    _hessian(1, 1) = std::pow(_tmp55, Scalar(2)) * _tmp69;
-    _hessian(2, 1) = _tmp61 * _tmp71;
-    _hessian(3, 1) = _tmp63 * _tmp71;
-    _hessian(4, 1) = _tmp65 * _tmp71;
-    _hessian(5, 1) = _tmp67 * _tmp71;
+    _hessian(1, 1) =
+        std::pow(_tmp126, Scalar(2)) * _tmp224 + std::pow(_tmp127, Scalar(2)) * _tmp237 +
+        std::pow(_tmp129, Scalar(2)) * _tmp233 + std::pow(_tmp131, Scalar(2)) * _tmp232 +
+        std::pow(_tmp133, Scalar(2)) * _tmp229 + std::pow(_tmp135, Scalar(2)) * _tmp222 +
+        std::pow(_tmp137, Scalar(2)) * _tmp238 + std::pow(_tmp139, Scalar(2)) * _tmp234 +
+        std::pow(_tmp141, Scalar(2)) * _tmp225 + std::pow(_tmp142, Scalar(2)) * _tmp240 +
+        std::pow(_tmp144, Scalar(2)) * _tmp231 + std::pow(_tmp146, Scalar(2)) * _tmp223 +
+        std::pow(_tmp148, Scalar(2)) * _tmp227 + std::pow(_tmp150, Scalar(2)) * _tmp228 +
+        std::pow(_tmp152, Scalar(2)) * _tmp235 + std::pow(_tmp154, Scalar(2)) * _tmp239 +
+        std::pow(_tmp156, Scalar(2)) * _tmp241 + std::pow(_tmp158, Scalar(2)) * _tmp226 +
+        std::pow(_tmp160, Scalar(2)) * _tmp230 + std::pow(_tmp161, Scalar(2)) * _tmp236;
+    _hessian(2, 1) = _tmp126 * _tmp296 + _tmp127 * _tmp297 + _tmp131 * _tmp295 + _tmp135 * _tmp274 +
+                     _tmp137 * _tmp178 * _tmp238 + _tmp141 * _tmp294 + _tmp148 * _tmp298 +
+                     _tmp152 * _tmp271 + _tmp156 * _tmp264 + _tmp158 * _tmp265 + _tmp160 * _tmp266 +
+                     _tmp161 * _tmp198 * _tmp236 + _tmp170 * _tmp243 + _tmp174 * _tmp244 +
+                     _tmp180 * _tmp256 + _tmp183 * _tmp242 + _tmp184 * _tmp245 + _tmp186 * _tmp260 +
+                     _tmp189 * _tmp261 + _tmp191 * _tmp247;
+    _hessian(3, 1) =
+        _tmp135 * _tmp280 + _tmp137 * _tmp305 + _tmp148 * _tmp301 + _tmp152 * _tmp302 +
+        _tmp156 * _tmp299 + _tmp160 * _tmp283 + _tmp161 * _tmp275 + _tmp242 * normals_9_(0, 0) +
+        _tmp243 * normals_2_(0, 0) + _tmp244 * normals_4_(0, 0) + _tmp245 * normals_10_(0, 0) +
+        _tmp247 * normals_15_(0, 0) + _tmp251 * normals_17_(0, 0) + _tmp256 * normals_7_(0, 0) +
+        _tmp260 * normals_11_(0, 0) + _tmp261 * normals_13_(0, 0) + _tmp300 * normals_1_(0, 0) +
+        _tmp303 * normals_8_(0, 0) + _tmp304 * normals_3_(0, 0) + _tmp306 * normals_0_(0, 0);
+    _hessian(4, 1) =
+        _tmp137 * _tmp309 + _tmp148 * _tmp227 * normals_12_(1, 0) + _tmp152 * _tmp308 +
+        _tmp156 * _tmp307 + _tmp161 * _tmp284 + _tmp242 * normals_9_(1, 0) +
+        _tmp243 * normals_2_(1, 0) + _tmp244 * normals_4_(1, 0) + _tmp245 * normals_10_(1, 0) +
+        _tmp247 * normals_15_(1, 0) + _tmp250 * normals_5_(1, 0) + _tmp251 * normals_17_(1, 0) +
+        _tmp256 * normals_7_(1, 0) + _tmp260 * normals_11_(1, 0) + _tmp261 * normals_13_(1, 0) +
+        _tmp300 * normals_1_(1, 0) + _tmp303 * normals_8_(1, 0) + _tmp304 * normals_3_(1, 0) +
+        _tmp306 * normals_0_(1, 0) + _tmp310 * normals_18_(1, 0);
+    _hessian(5, 1) =
+        _tmp135 * _tmp292 + _tmp137 * _tmp312 + _tmp148 * _tmp311 + _tmp150 * _tmp291 +
+        _tmp152 * _tmp235 * normals_14_(2, 0) + _tmp156 * _tmp241 * normals_16_(2, 0) +
+        _tmp161 * _tmp287 + _tmp242 * normals_9_(2, 0) + _tmp243 * normals_2_(2, 0) +
+        _tmp244 * normals_4_(2, 0) + _tmp245 * normals_10_(2, 0) + _tmp247 * normals_15_(2, 0) +
+        _tmp251 * normals_17_(2, 0) + _tmp256 * normals_7_(2, 0) + _tmp260 * normals_11_(2, 0) +
+        _tmp300 * normals_1_(2, 0) + _tmp303 * normals_8_(2, 0) + _tmp304 * normals_3_(2, 0) +
+        _tmp306 * normals_0_(2, 0) + _tmp310 * normals_18_(2, 0);
     _hessian(0, 2) = 0;
     _hessian(1, 2) = 0;
-    _hessian(2, 2) = std::pow(_tmp61, Scalar(2)) * _tmp69;
-    _hessian(3, 2) = _tmp61 * _tmp72;
-    _hessian(4, 2) = _tmp61 * _tmp65 * _tmp69;
-    _hessian(5, 2) = _tmp61 * _tmp73;
+    _hessian(2, 2) =
+        std::pow(_tmp167, Scalar(2)) * _tmp224 + std::pow(_tmp168, Scalar(2)) * _tmp237 +
+        std::pow(_tmp170, Scalar(2)) * _tmp233 + std::pow(_tmp172, Scalar(2)) * _tmp232 +
+        std::pow(_tmp174, Scalar(2)) * _tmp229 + std::pow(_tmp176, Scalar(2)) * _tmp222 +
+        std::pow(_tmp178, Scalar(2)) * _tmp238 + std::pow(_tmp180, Scalar(2)) * _tmp234 +
+        std::pow(_tmp182, Scalar(2)) * _tmp225 + std::pow(_tmp183, Scalar(2)) * _tmp240 +
+        std::pow(_tmp184, Scalar(2)) * _tmp231 + std::pow(_tmp186, Scalar(2)) * _tmp223 +
+        std::pow(_tmp188, Scalar(2)) * _tmp227 + std::pow(_tmp189, Scalar(2)) * _tmp228 +
+        std::pow(_tmp190, Scalar(2)) * _tmp235 + std::pow(_tmp191, Scalar(2)) * _tmp239 +
+        std::pow(_tmp193, Scalar(2)) * _tmp241 + std::pow(_tmp195, Scalar(2)) * _tmp226 +
+        std::pow(_tmp197, Scalar(2)) * _tmp230 + std::pow(_tmp198, Scalar(2)) * _tmp236;
+    _hessian(3, 2) =
+        _tmp170 * _tmp313 + _tmp178 * _tmp305 + _tmp183 * _tmp314 +
+        _tmp186 * _tmp223 * normals_11_(0, 0) + _tmp189 * _tmp279 + _tmp197 * _tmp283 +
+        _tmp198 * _tmp275 + _tmp263 * normals_10_(0, 0) + _tmp264 * normals_16_(0, 0) +
+        _tmp265 * normals_17_(0, 0) + _tmp268 * normals_15_(0, 0) + _tmp271 * normals_14_(0, 0) +
+        _tmp272 * normals_4_(0, 0) + _tmp273 * normals_7_(0, 0) + _tmp274 * normals_5_(0, 0) +
+        _tmp294 * normals_8_(0, 0) + _tmp295 * normals_3_(0, 0) + _tmp296 * normals_0_(0, 0) +
+        _tmp297 * normals_1_(0, 0) + _tmp298 * normals_12_(0, 0);
+    _hessian(4, 2) =
+        _tmp170 * _tmp315 + _tmp178 * _tmp309 + _tmp183 * _tmp316 + _tmp186 * _tmp285 +
+        _tmp198 * _tmp284 + _tmp263 * normals_10_(1, 0) + _tmp264 * normals_16_(1, 0) +
+        _tmp265 * normals_17_(1, 0) + _tmp266 * normals_18_(1, 0) + _tmp268 * normals_15_(1, 0) +
+        _tmp269 * normals_13_(1, 0) + _tmp271 * normals_14_(1, 0) + _tmp272 * normals_4_(1, 0) +
+        _tmp273 * normals_7_(1, 0) + _tmp274 * normals_5_(1, 0) + _tmp294 * normals_8_(1, 0) +
+        _tmp295 * normals_3_(1, 0) + _tmp296 * normals_0_(1, 0) + _tmp297 * normals_1_(1, 0) +
+        _tmp298 * normals_12_(1, 0);
+    _hessian(5, 2) =
+        _tmp170 * _tmp233 * normals_2_(2, 0) + _tmp178 * _tmp312 +
+        _tmp183 * _tmp240 * normals_9_(2, 0) + _tmp186 * _tmp293 + _tmp189 * _tmp291 +
+        _tmp198 * _tmp287 + _tmp263 * normals_10_(2, 0) + _tmp264 * normals_16_(2, 0) +
+        _tmp265 * normals_17_(2, 0) + _tmp266 * normals_18_(2, 0) + _tmp268 * normals_15_(2, 0) +
+        _tmp271 * normals_14_(2, 0) + _tmp272 * normals_4_(2, 0) + _tmp273 * normals_7_(2, 0) +
+        _tmp274 * normals_5_(2, 0) + _tmp294 * normals_8_(2, 0) + _tmp295 * normals_3_(2, 0) +
+        _tmp296 * normals_0_(2, 0) + _tmp297 * normals_1_(2, 0) + _tmp298 * normals_12_(2, 0);
     _hessian(0, 3) = 0;
     _hessian(1, 3) = 0;
     _hessian(2, 3) = 0;
-    _hessian(3, 3) = std::pow(_tmp63, Scalar(2)) * _tmp69;
-    _hessian(4, 3) = _tmp65 * _tmp72;
-    _hessian(5, 3) = _tmp63 * _tmp73;
+    _hessian(3, 3) = _tmp222 * std::pow(normals_5_(0, 0), Scalar(2)) +
+                     _tmp223 * std::pow(normals_11_(0, 0), Scalar(2)) +
+                     _tmp224 * std::pow(normals_0_(0, 0), Scalar(2)) +
+                     _tmp225 * std::pow(normals_8_(0, 0), Scalar(2)) +
+                     _tmp226 * std::pow(normals_17_(0, 0), Scalar(2)) +
+                     _tmp227 * std::pow(normals_12_(0, 0), Scalar(2)) +
+                     _tmp228 * std::pow(normals_13_(0, 0), Scalar(2)) +
+                     _tmp229 * std::pow(normals_4_(0, 0), Scalar(2)) +
+                     _tmp230 * std::pow(normals_18_(0, 0), Scalar(2)) +
+                     _tmp231 * std::pow(normals_10_(0, 0), Scalar(2)) +
+                     _tmp232 * std::pow(normals_3_(0, 0), Scalar(2)) +
+                     _tmp233 * std::pow(normals_2_(0, 0), Scalar(2)) +
+                     _tmp234 * std::pow(normals_7_(0, 0), Scalar(2)) +
+                     _tmp235 * std::pow(normals_14_(0, 0), Scalar(2)) +
+                     _tmp236 * std::pow(normals_19_(0, 0), Scalar(2)) +
+                     _tmp237 * std::pow(normals_1_(0, 0), Scalar(2)) +
+                     _tmp238 * std::pow(normals_6_(0, 0), Scalar(2)) +
+                     _tmp239 * std::pow(normals_15_(0, 0), Scalar(2)) +
+                     _tmp240 * std::pow(normals_9_(0, 0), Scalar(2)) +
+                     _tmp241 * std::pow(normals_16_(0, 0), Scalar(2));
+    _hessian(4, 3) =
+        _tmp275 * normals_19_(1, 0) + _tmp276 * normals_17_(1, 0) + _tmp277 * normals_10_(1, 0) +
+        _tmp278 * normals_4_(1, 0) + _tmp279 * normals_13_(1, 0) + _tmp280 * normals_5_(1, 0) +
+        _tmp281 * normals_7_(1, 0) + _tmp283 * normals_18_(1, 0) + _tmp285 * normals_11_(0, 0) +
+        _tmp301 * normals_12_(1, 0) + _tmp302 * normals_14_(1, 0) + _tmp307 * normals_16_(0, 0) +
+        _tmp309 * normals_6_(0, 0) + _tmp313 * normals_2_(1, 0) + _tmp316 * normals_9_(0, 0) +
+        _tmp317 * normals_0_(0, 0) + _tmp318 * normals_3_(1, 0) + _tmp319 * normals_1_(1, 0) +
+        _tmp320 * normals_8_(1, 0) + _tmp321 * normals_15_(0, 0);
+    _hessian(5, 3) =
+        _tmp224 * normals_0_(0, 0) * normals_0_(2, 0) +
+        _tmp239 * normals_15_(0, 0) * normals_15_(2, 0) + _tmp276 * normals_17_(2, 0) +
+        _tmp277 * normals_10_(2, 0) + _tmp281 * normals_7_(2, 0) + _tmp283 * normals_18_(2, 0) +
+        _tmp287 * normals_19_(0, 0) + _tmp290 * normals_4_(0, 0) + _tmp291 * normals_13_(0, 0) +
+        _tmp292 * normals_5_(0, 0) + _tmp293 * normals_11_(0, 0) + _tmp299 * normals_16_(2, 0) +
+        _tmp302 * normals_14_(2, 0) + _tmp311 * normals_12_(0, 0) + _tmp312 * normals_6_(0, 0) +
+        _tmp313 * normals_2_(2, 0) + _tmp314 * normals_9_(2, 0) + _tmp318 * normals_3_(2, 0) +
+        _tmp319 * normals_1_(2, 0) + _tmp320 * normals_8_(2, 0);
     _hessian(0, 4) = 0;
     _hessian(1, 4) = 0;
     _hessian(2, 4) = 0;
     _hessian(3, 4) = 0;
-    _hessian(4, 4) = std::pow(_tmp65, Scalar(2)) * _tmp69;
-    _hessian(5, 4) = _tmp65 * _tmp73;
+    _hessian(4, 4) = _tmp222 * std::pow(normals_5_(1, 0), Scalar(2)) +
+                     _tmp223 * std::pow(normals_11_(1, 0), Scalar(2)) +
+                     _tmp224 * std::pow(normals_0_(1, 0), Scalar(2)) +
+                     _tmp225 * std::pow(normals_8_(1, 0), Scalar(2)) +
+                     _tmp226 * std::pow(normals_17_(1, 0), Scalar(2)) +
+                     _tmp227 * std::pow(normals_12_(1, 0), Scalar(2)) +
+                     _tmp228 * std::pow(normals_13_(1, 0), Scalar(2)) +
+                     _tmp229 * std::pow(normals_4_(1, 0), Scalar(2)) +
+                     _tmp230 * std::pow(normals_18_(1, 0), Scalar(2)) +
+                     _tmp231 * std::pow(normals_10_(1, 0), Scalar(2)) +
+                     _tmp232 * std::pow(normals_3_(1, 0), Scalar(2)) +
+                     _tmp233 * std::pow(normals_2_(1, 0), Scalar(2)) +
+                     _tmp234 * std::pow(normals_7_(1, 0), Scalar(2)) +
+                     _tmp235 * std::pow(normals_14_(1, 0), Scalar(2)) +
+                     _tmp236 * std::pow(normals_19_(1, 0), Scalar(2)) +
+                     _tmp237 * std::pow(normals_1_(1, 0), Scalar(2)) +
+                     _tmp238 * std::pow(normals_6_(1, 0), Scalar(2)) +
+                     _tmp239 * std::pow(normals_15_(1, 0), Scalar(2)) +
+                     _tmp240 * std::pow(normals_9_(1, 0), Scalar(2)) +
+                     _tmp241 * std::pow(normals_16_(1, 0), Scalar(2));
+    _hessian(5, 4) =
+        _tmp225 * normals_8_(1, 0) * normals_8_(2, 0) +
+        _tmp230 * normals_18_(1, 0) * normals_18_(2, 0) +
+        _tmp232 * normals_3_(1, 0) * normals_3_(2, 0) +
+        _tmp237 * normals_1_(1, 0) * normals_1_(2, 0) + _tmp285 * normals_11_(2, 0) +
+        _tmp286 * normals_7_(2, 0) + _tmp287 * normals_19_(1, 0) + _tmp288 * normals_17_(1, 0) +
+        _tmp289 * normals_10_(1, 0) + _tmp290 * normals_4_(1, 0) + _tmp291 * normals_13_(1, 0) +
+        _tmp292 * normals_5_(1, 0) + _tmp307 * normals_16_(2, 0) + _tmp308 * normals_14_(2, 0) +
+        _tmp309 * normals_6_(2, 0) + _tmp311 * normals_12_(1, 0) + _tmp315 * normals_2_(2, 0) +
+        _tmp316 * normals_9_(2, 0) + _tmp317 * normals_0_(2, 0) + _tmp321 * normals_15_(2, 0);
     _hessian(0, 5) = 0;
     _hessian(1, 5) = 0;
     _hessian(2, 5) = 0;
     _hessian(3, 5) = 0;
     _hessian(4, 5) = 0;
-    _hessian(5, 5) = std::pow(_tmp67, Scalar(2)) * _tmp69;
+    _hessian(5, 5) = _tmp222 * std::pow(normals_5_(2, 0), Scalar(2)) +
+                     _tmp223 * std::pow(normals_11_(2, 0), Scalar(2)) +
+                     _tmp224 * std::pow(normals_0_(2, 0), Scalar(2)) +
+                     _tmp225 * std::pow(normals_8_(2, 0), Scalar(2)) +
+                     _tmp226 * std::pow(normals_17_(2, 0), Scalar(2)) +
+                     _tmp227 * std::pow(normals_12_(2, 0), Scalar(2)) +
+                     _tmp228 * std::pow(normals_13_(2, 0), Scalar(2)) +
+                     _tmp229 * std::pow(normals_4_(2, 0), Scalar(2)) +
+                     _tmp230 * std::pow(normals_18_(2, 0), Scalar(2)) +
+                     _tmp231 * std::pow(normals_10_(2, 0), Scalar(2)) +
+                     _tmp232 * std::pow(normals_3_(2, 0), Scalar(2)) +
+                     _tmp233 * std::pow(normals_2_(2, 0), Scalar(2)) +
+                     _tmp234 * std::pow(normals_7_(2, 0), Scalar(2)) +
+                     _tmp235 * std::pow(normals_14_(2, 0), Scalar(2)) +
+                     _tmp236 * std::pow(normals_19_(2, 0), Scalar(2)) +
+                     _tmp237 * std::pow(normals_1_(2, 0), Scalar(2)) +
+                     _tmp238 * std::pow(normals_6_(2, 0), Scalar(2)) +
+                     _tmp239 * std::pow(normals_15_(2, 0), Scalar(2)) +
+                     _tmp240 * std::pow(normals_9_(2, 0), Scalar(2)) +
+                     _tmp241 * std::pow(normals_16_(2, 0), Scalar(2));
   }
 
   if (rhs != nullptr) {
     Eigen::Matrix<Scalar, 6, 1>& _rhs = (*rhs);
 
-    _rhs(0, 0) = _tmp46;
-    _rhs(1, 0) = _tmp56;
-    _rhs(2, 0) = _tmp62;
-    _rhs(3, 0) = _tmp64;
-    _rhs(4, 0) = _tmp66;
-    _rhs(5, 0) = _tmp68;
+    _rhs(0, 0) = _tmp100 * _tmp324 + _tmp103 * _tmp328 + _tmp104 * _tmp330 + _tmp106 * _tmp338 +
+                 _tmp109 * _tmp342 + _tmp111 * _tmp344 + _tmp113 * _tmp327 + _tmp114 * _tmp332 +
+                 _tmp117 * _tmp339 + _tmp322 * _tmp89 + _tmp325 * _tmp78 + _tmp326 * _tmp94 +
+                 _tmp331 * _tmp87 + _tmp333 * _tmp99 + _tmp334 * _tmp85 + _tmp335 * _tmp83 +
+                 _tmp336 * _tmp93 + _tmp340 * _tmp81 + _tmp341 * _tmp91 + _tmp343 * _tmp97;
+    _rhs(1, 0) = _tmp126 * _tmp325 + _tmp128 * _tmp340 + _tmp130 * _tmp335 + _tmp132 * _tmp334 +
+                 _tmp134 * _tmp331 + _tmp136 * _tmp322 + _tmp138 * _tmp341 + _tmp140 * _tmp336 +
+                 _tmp141 * _tmp326 + _tmp142 * _tmp346 + _tmp145 * _tmp333 + _tmp147 * _tmp323 +
+                 _tmp148 * _tmp345 + _tmp151 * _tmp329 + _tmp153 * _tmp337 + _tmp155 * _tmp342 +
+                 _tmp156 * _tmp347 + _tmp158 * _tmp349 + _tmp160 * _tmp332 + _tmp161 * _tmp348;
+    _rhs(2, 0) = _tmp167 * _tmp325 + _tmp169 * _tmp340 + _tmp171 * _tmp335 + _tmp173 * _tmp334 +
+                 _tmp175 * _tmp331 + _tmp177 * _tmp322 + _tmp179 * _tmp341 + _tmp181 * _tmp336 +
+                 _tmp182 * _tmp326 + _tmp183 * _tmp346 + _tmp185 * _tmp333 + _tmp187 * _tmp323 +
+                 _tmp188 * _tmp345 + _tmp189 * _tmp330 + _tmp190 * _tmp338 + _tmp191 * _tmp350 +
+                 _tmp194 * _tmp344 + _tmp196 * _tmp327 + _tmp197 * _tmp332 + _tmp198 * _tmp348;
+    _rhs(3, 0) =
+        _tmp199 * _tmp340 + _tmp200 * _tmp335 + _tmp201 * _tmp334 + _tmp202 * _tmp331 +
+        _tmp203 * _tmp322 + _tmp204 * _tmp341 + _tmp205 * _tmp336 + _tmp206 * _tmp343 +
+        _tmp324 * normals_11_(0, 0) + _tmp325 * normals_0_(0, 0) + _tmp326 * normals_8_(0, 0) +
+        _tmp330 * normals_13_(0, 0) + _tmp332 * normals_18_(0, 0) + _tmp338 * normals_14_(0, 0) +
+        _tmp345 * normals_12_(0, 0) + _tmp347 * normals_16_(0, 0) + _tmp348 * normals_19_(0, 0) +
+        _tmp349 * normals_17_(0, 0) + _tmp350 * normals_15_(0, 0) + _tmp351 * normals_10_(0, 0);
+    _rhs(4, 0) =
+        _tmp208 * _tmp340 + _tmp209 * _tmp335 + _tmp210 * _tmp334 + _tmp211 * _tmp331 +
+        _tmp212 * _tmp322 + _tmp213 * _tmp341 + _tmp214 * _tmp336 + _tmp324 * normals_11_(1, 0) +
+        _tmp325 * normals_0_(1, 0) + _tmp326 * normals_8_(1, 0) + _tmp330 * normals_13_(1, 0) +
+        _tmp332 * normals_18_(1, 0) + _tmp338 * normals_14_(1, 0) + _tmp345 * normals_12_(1, 0) +
+        _tmp346 * normals_9_(1, 0) + _tmp347 * normals_16_(1, 0) + _tmp348 * normals_19_(1, 0) +
+        _tmp349 * normals_17_(1, 0) + _tmp350 * normals_15_(1, 0) + _tmp351 * normals_10_(1, 0);
+    _rhs(5, 0) =
+        _tmp215 * _tmp340 + _tmp216 * _tmp335 + _tmp217 * _tmp334 + _tmp218 * _tmp331 +
+        _tmp219 * _tmp322 + _tmp220 * _tmp341 + _tmp221 * _tmp336 + _tmp324 * normals_11_(2, 0) +
+        _tmp325 * normals_0_(2, 0) + _tmp326 * normals_8_(2, 0) + _tmp330 * normals_13_(2, 0) +
+        _tmp332 * normals_18_(2, 0) + _tmp338 * normals_14_(2, 0) + _tmp345 * normals_12_(2, 0) +
+        _tmp346 * normals_9_(2, 0) + _tmp347 * normals_16_(2, 0) + _tmp348 * normals_19_(2, 0) +
+        _tmp349 * normals_17_(2, 0) + _tmp350 * normals_15_(2, 0) + _tmp351 * normals_10_(2, 0);
   }
 }  // NOLINT(readability/fn_size)
 

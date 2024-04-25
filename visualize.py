@@ -1,6 +1,6 @@
 import symforce
 
-symforce.set_epsilon_to_symbol()
+# symforce.set_epsilon_to_symbol()
 
 import numpy as np
 import sym
@@ -219,7 +219,7 @@ def point_to_plane_residual(
 
     d_pred = normal_world.T * v
 
-    return d_pred  # .squared_norm()
+    return d_pred
 
 
 def build_factors(num_correspondences: int) -> T.Iterator[Factor]:
@@ -236,7 +236,6 @@ def build_factors(num_correspondences: int) -> T.Iterator[Factor]:
 
 
 def main() -> None:
-    num_poses = 1
     num_points_per_face = 100
 
     values = build_cube_values(num_points_per_face)
@@ -275,5 +274,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # symforce.set_epsilon_to_symbol()
     main()

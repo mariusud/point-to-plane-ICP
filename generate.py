@@ -28,18 +28,17 @@ def build_residual(num_correspondences, values: Values) -> Values:
     residual["point_to_plane_residual"] = []
     for i in range(num_correspondences):
         residuals.append(
-            point_to_plane_residual(
-                values.attr.world_T_lidar,
-                values.attr.points[i],
-                values.attr.centroids[i],
-                values.attr.normals[i],
+            sf.V1(
+                point_to_plane_residual(
+                    values.attr.world_T_lidar,
+                    values.attr.points[i],
+                    values.attr.centroids[i],
+                    values.attr.normals[i],
+                ).squared_norm()
             )
         )
     residual["point_to_plane_residual"].append(residuals)
-    block_residual = sf.Matrix.block_matrix(
-        [[residual] for residual in residuals]
-    ).squared_norm()
-    return sf.V1(sf.sqrt(block_residual))
+    return sf.Matrix.block_matrix([[residual] for residual in residuals])
 
 
 def build_codegen_object(
@@ -149,7 +148,7 @@ def generate_point_to_plane_residual_code(
 
 
 def generate(output_dir: Path) -> None:
-    NUM_POINTS_PER_FACE = 2
+    NUM_POINTS_PER_FACE = 20
     generate_point_to_plane_residual_code(output_dir)
     values_codegen.generate_values_keys(
         build_cube_values(NUM_POINTS_PER_FACE),

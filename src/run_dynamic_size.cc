@@ -44,11 +44,12 @@ namespace ICP
 
     void RunDynamic()
     {
-        const int kNumPointsPerFace = 10; // for each face, 6 faces on a cube
-        const int kNumPoints = 2;         // kNumPointsPerFace * 6;
+        const int kNumPointsPerFace = 20;             // for each face, 6 faces on a cube
+        const int kNumPoints = kNumPointsPerFace * 6; // kNumPointsPerFace * 6;
         const int kNumPoses = 1;
 
-        auto values = generate_points<double>(kNumPoints);
+        // auto values = generate_points<double>(kNumPoints);
+        auto values = build_cube_values<double>(kNumPointsPerFace);
 
         const std::vector<sym::Factor<double>> factors = BuildDynamicFactors<double>(kNumPoints);
         sym::Optimizer<double> optimizer(sym::DefaultOptimizerParams(), factors,
