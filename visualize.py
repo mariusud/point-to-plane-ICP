@@ -1,6 +1,6 @@
 import symforce
 
-# symforce.set_epsilon_to_symbol()
+symforce.set_epsilon_to_symbol()
 
 import numpy as np
 import sym
@@ -133,16 +133,16 @@ def generate_points_on_cube_surface(num_points_per_face):
         dtype=np.float64,
     )
 
-    # faces = [
-    # [0, 1, 2, 3],
-    # [4, 6, 7, 5],
-    # [0, 4, 5, 1],
-    # [2, 3, 7, 6],
-    # [0, 2, 6, 4],
-    # [1, 7, 5, 3],
-    # ]
+    faces = [
+        [0, 1, 2, 3],
+        [4, 6, 7, 5],
+        [0, 4, 5, 1],
+        [2, 3, 7, 6],
+        [0, 2, 6, 4],
+        [1, 7, 5, 3],
+    ]
 
-    faces = [[0, 1, 2, 3]]
+    # faces = [[0, 1, 2, 3]]
 
     for face in faces:
         # Get the vertices of the face
@@ -246,9 +246,6 @@ def main() -> None:
     # print(f"{key}:  {value}")
 
     factors = build_factors(num_points_per_face * NUM_FACES)
-
-    for factor in factors:
-        print("factor: ", factor)
 
     # visualize_factor_graph(factors, num_factors_to_visualize=1)
 
