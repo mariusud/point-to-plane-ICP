@@ -50,19 +50,23 @@ namespace ICP
 
     void RunFixed()
     {
-        const int kNumPointsPerFace = 10; // for each face, 6 faces on a cube
-        const int kNumPoints = kNumPointsPerFace * 6;
+        const int kNumPointsPerFace = 1; // for each face, 6 faces on a cube
+        const int kNumPoints = 2;        // kNumPointsPerFace * 6;
         const int kNumPoses = 1;
 
-        auto values = build_cube_values<double>(kNumPointsPerFace);
-        // spdlog::info("values: {}", values);
+        // auto values = build_cube_values<double>(kNumPointsPerFace);
+        auto values = generate_points<double>(kNumPoints);
+        spdlog::info("values: {}", values);
 
         // visualize(values, kNumPoints);
         const std::vector<sym::Factor<double>>
             factors = {BuildFixedFactor<double>(kNumPoses, kNumPoints)};
         spdlog::info("factors: {}", factors);
 
-        sym::Optimizer<double> optimizer(sym::DefaultOptimizerParams(), factors,
+        sym::optimizer_params_t params = sym::DefaultOptimizerParams();
+        params.verbose = true;
+
+        sym::Optimizer<double> optimizer(params, factors,
                                          "Point-To-PlaneOptimizerFixed");
 
         spdlog::info("Initial pose: {}", values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)));

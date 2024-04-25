@@ -1,7 +1,6 @@
-# -----------------------------------------------------------------------------
-# Set the default epsilon to a symbol
-# -----------------------------------------------------------------------------
 import symforce
+
+# symforce.set_epsilon_to_symbol()
 
 import numpy as np
 import sym
@@ -134,14 +133,16 @@ def generate_points_on_cube_surface(num_points_per_face):
         dtype=np.float64,
     )
 
-    faces = [
-        [0, 1, 2, 3],
-        [4, 6, 7, 5],
-        [0, 4, 5, 1],
-        [2, 3, 7, 6],
-        [0, 2, 6, 4],
-        [1, 7, 5, 3],
-    ]
+    # faces = [
+    # [0, 1, 2, 3],
+    # [4, 6, 7, 5],
+    # [0, 4, 5, 1],
+    # [2, 3, 7, 6],
+    # [0, 2, 6, 4],
+    # [1, 7, 5, 3],
+    # ]
+
+    faces = [[0, 1, 2, 3]]
 
     for face in faces:
         # Get the vertices of the face
@@ -218,7 +219,7 @@ def point_to_plane_residual(
 
     d_pred = normal_world.T * v
 
-    return d_pred
+    return d_pred  # .squared_norm()
 
 
 def build_factors(num_correspondences: int) -> T.Iterator[Factor]:
@@ -246,6 +247,9 @@ def main() -> None:
 
     factors = build_factors(num_points_per_face * NUM_FACES)
 
+    for factor in factors:
+        print("factor: ", factor)
+
     # visualize_factor_graph(factors, num_factors_to_visualize=1)
 
     optimized_keys = [f"world_T_lidar"]
@@ -253,7 +257,6 @@ def main() -> None:
     optimizer = Optimizer(
         factors=factors,
         optimized_keys=optimized_keys,
-        # Customize optimizer behavior
         params=Optimizer.Params(
             verbose=True,
             initial_lambda=1e4,
@@ -262,7 +265,6 @@ def main() -> None:
         ),
     )
 
-    # Solve and return the result
     result = optimizer.optimize(values)
 
     values_per_iter = [
@@ -270,7 +272,6 @@ def main() -> None:
     ]
     visualize(values, values_per_iter)
 
-    # Print some values
     print(f"Num iterations: {len(result.iterations) - 1}")
     print(f"Final error: {result.error():.6f}")
     print(f"Status: {result.status}")

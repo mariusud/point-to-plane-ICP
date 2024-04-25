@@ -8,8 +8,6 @@ import symforce.symbolic as sf
 from symforce.codegen import Codegen
 from symforce.codegen import CodegenConfig
 from symforce.codegen import CppConfig
-from symforce.codegen import RenderTemplateConfig
-from symforce.codegen import template_util
 from symforce.codegen import values_codegen
 
 from visualize import build_cube_values, point_to_plane_residual
@@ -23,8 +21,11 @@ import shutil
 import textwrap
 
 
-def build_residual(num_correspondences, values: Values) -> sf.Matrix:
-    residuals: T.List[sf.Matrix] = []
+def build_residual(num_correspondences, values: Values) -> Values:
+    # residuals: T.List[sf.Matrix] = []
+    residual = Values()
+    residuals = []
+    residual["point_to_plane_residual"] = []
     for i in range(num_correspondences):
         residuals.append(
             point_to_plane_residual(
@@ -34,7 +35,11 @@ def build_residual(num_correspondences, values: Values) -> sf.Matrix:
                 values.attr.normals[i],
             )
         )
-    return sf.Matrix(residuals)
+    residual["point_to_plane_residual"].append(residuals)
+    block_residual = sf.Matrix.block_matrix(
+        [[residual] for residual in residuals]
+    ).squared_norm()
+    return sf.V1(sf.sqrt(block_residual))
 
 
 def build_codegen_object(
@@ -63,20 +68,28 @@ def build_codegen_object(
 
     values = Values(**{key: symbolic(key, v) for key, v in values.items_recursive()})
 
-    NUM_CORRESPONDENCES = num_points_per_face * 6
+    NUM_CORRESPONDENCES = num_points_per_face  # * 6
 
     print("NUM_CORRESPONDENCES: ", NUM_CORRESPONDENCES)
 
     residual = build_residual(NUM_CORRESPONDENCES, values)
+
+    print("residual: ", residual)
 
     flat_keys = {key: re.sub(r"[\.\[\]]+", "_", key) for key in values.keys_recursive()}
 
     inputs = Values(
         **{flat_keys[key]: value for key, value in values.items_recursive()}
     )
+    # outputs = Values(residual=sf.M(residual.to_storage()))
     outputs = Values(residual=residual)
 
-    optimized_keys = [f"world_T_lidar"]
+    optimized_keys = ["world_T_lidar"]
+
+    print("inputs: ", inputs)
+    print("outputs: ", outputs)
+    print("optimized_keys: ", optimized_keys)
+    print("values: ", values)
 
     linearization_func = Codegen(
         inputs=inputs,
@@ -136,7 +149,7 @@ def generate_point_to_plane_residual_code(
 
 
 def generate(output_dir: Path) -> None:
-    NUM_POINTS_PER_FACE = 10
+    NUM_POINTS_PER_FACE = 2
     generate_point_to_plane_residual_code(output_dir)
     values_codegen.generate_values_keys(
         build_cube_values(NUM_POINTS_PER_FACE),
