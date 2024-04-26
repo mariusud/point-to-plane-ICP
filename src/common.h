@@ -32,12 +32,30 @@ inline std::tuple<std::vector<Eigen::Vector3d>, std::vector<std::vector<int>>> g
     return std::make_tuple(cube_vertices, cube_faces);
 }
 
-template <typename Scalar>
-inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
+inline sym::Valuesd build_cube_values(int kNumPointsPerFace)
 {
-    sym::Values<Scalar> values;
+    sym::Valuesd values;
 
-    auto [cube_vertices, cube_faces] = generate_cube();
+    // auto [cube_vertices, cube_faces] = generate_cube();
+
+    std::vector<Eigen::Vector3d> cube_vertices = {
+        {-0.5, -0.5, -0.5},
+        {-0.5, -0.5, 0.5},
+        {-0.5, 0.5, -0.5},
+        {-0.5, 0.5, 0.5},
+        {0.5, -0.5, -0.5},
+        {0.5, -0.5, 0.5},
+        {0.5, 0.5, -0.5},
+        {0.5, 0.5, 0.5}};
+
+    std::vector<std::vector<int>> cube_faces = {
+        {0, 1, 2, 3}, //
+        {4, 6, 7, 5}, // left face
+        {0, 4, 5, 1}, // bottom face
+        {2, 3, 7, 6}, //
+        {0, 2, 6, 4}, //
+        {1, 7, 5, 3}  // back face
+    };
 
     std::vector<Eigen::Vector3d> points;
     std::vector<Eigen::Vector3d> normals;
@@ -79,23 +97,22 @@ inline sym::Values<Scalar> build_cube_values(int kNumPointsPerFace)
     double t = 40;
 
     // Calculate tangent vector components
-    Eigen::Matrix<Scalar, 6, 1> tangent_vec;
+    Eigen::Matrix<double, 6, 1> tangent_vec;
     tangent_vec << 0, 0, 0, 1, 1, 1;
 
     // Create the pose from the tangent vector
-    sym::Pose3<Scalar> world_T_lidar = sym::Pose3<Scalar>::FromTangent(tangent_vec);
+    sym::Pose3<double> world_T_lidar = sym::Pose3<double>::FromTangent(tangent_vec);
     values.Set(sym::Keys::WORLD_T_LIDAR.WithSuper(0), world_T_lidar);
 
     // Set epsilon
-    values.Set(sym::Keys::EPSILON, sym::kDefaultEpsilon<Scalar>);
+    values.Set(sym::Keys::EPSILON, sym::kDefaultEpsilon<double>);
 
     return values;
 }
 
-template <typename Scalar>
-inline sym::Values<Scalar> generate_points(int num_points)
+inline sym::Valuesd generate_points(int num_points)
 {
-    sym::Values<Scalar> values;
+    sym::Valuesd values;
 
     static const std::vector<Eigen::Vector3d> cube_vertices = {
         {-0.5, -0.5, -0.5},
@@ -133,16 +150,16 @@ inline sym::Values<Scalar> generate_points(int num_points)
         double t = 40;
 
         // Calculate tangent vector components
-        Eigen::Matrix<Scalar, 6, 1> tangent_vec;
+        Eigen::Matrix<double, 6, 1> tangent_vec;
         tangent_vec << 0, 0, 0, 1, 1, 1;
 
         // Create the pose from the tangent vector
-        sym::Pose3<Scalar> world_T_lidar = sym::Pose3<Scalar>::FromTangent(tangent_vec);
+        sym::Pose3<double> world_T_lidar = sym::Pose3<double>::FromTangent(tangent_vec);
         values.Set(sym::Keys::WORLD_T_LIDAR.WithSuper(i), world_T_lidar);
     }
 
     // Set epsilon
-    values.Set(sym::Keys::EPSILON, sym::kDefaultEpsilon<Scalar>);
+    values.Set(sym::Keys::EPSILON, sym::kDefaultEpsilon<double>);
 
     return values;
 }
