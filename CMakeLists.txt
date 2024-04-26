@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-# add_compile_options(-ftemplate-depth=1500)
+add_compile_options(-ftemplate-depth=1500)
 
 # Set the installation directory path
 set(CMAKE_INSTALL_PREFIX "/home/marius/Development/symforce")
@@ -23,7 +23,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Eigen REQUIRED)
 find_package(Symforce REQUIRED)
 
-include(AddThirdParty.cmake)
+include(cmake/AddThirdParty.cmake)
 include(FetchContent)
 
 # Add the executable target
@@ -77,33 +77,6 @@ target_link_libraries(
     symforce::cholesky
     symforce::opt
 )
-
-
-# add_executable(run_comparison src/run_comparison.cc)
-
-# # Add dependencies
-# add_dependencies(
-#     run_comparison
-#     Eigen::Eigen
-#     fmt::fmt
-#     spdlog::spdlog
-#     symforce::gen
-#     symforce::cholesky
-#     symforce::opt
-# )
-
-# # Link libraries
-# target_link_libraries(
-#     run_comparison
-#     Eigen::Eigen
-#     fmt::fmt
-#     spdlog::spdlog
-#     symforce::gen
-#     symforce::cholesky
-#     symforce::opt
-# )
-
-
 
 
 # Install target
