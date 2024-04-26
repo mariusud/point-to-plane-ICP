@@ -20,7 +20,7 @@ import re
 import shutil
 import textwrap
 
-NUM_POINTS_PER_FACE = 10
+NUM_POINTS_PER_FACE = 20
 NUM_CORRESPONDENCES = NUM_POINTS_PER_FACE * 6
 
 

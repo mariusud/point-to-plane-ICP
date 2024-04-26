@@ -36,26 +36,7 @@ inline sym::Valuesd build_cube_values(int kNumPointsPerFace)
 {
     sym::Valuesd values;
 
-    // auto [cube_vertices, cube_faces] = generate_cube();
-
-    std::vector<Eigen::Vector3d> cube_vertices = {
-        {-0.5, -0.5, -0.5},
-        {-0.5, -0.5, 0.5},
-        {-0.5, 0.5, -0.5},
-        {-0.5, 0.5, 0.5},
-        {0.5, -0.5, -0.5},
-        {0.5, -0.5, 0.5},
-        {0.5, 0.5, -0.5},
-        {0.5, 0.5, 0.5}};
-
-    std::vector<std::vector<int>> cube_faces = {
-        {0, 1, 2, 3}, //
-        {4, 6, 7, 5}, // left face
-        {0, 4, 5, 1}, // bottom face
-        {2, 3, 7, 6}, //
-        {0, 2, 6, 4}, //
-        {1, 7, 5, 3}  // back face
-    };
+    auto [cube_vertices, cube_faces] = generate_cube();
 
     std::vector<Eigen::Vector3d> points;
     std::vector<Eigen::Vector3d> normals;
