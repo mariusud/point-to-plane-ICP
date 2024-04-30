@@ -5,39 +5,71 @@ symforce.set_epsilon_to_symbol()
 
 from pathlib import Path
 import symforce.symbolic as sf
-from symforce.codegen import Codegen
-from symforce.codegen import CodegenConfig
-from symforce.codegen import CppConfig
-from symforce.codegen import values_codegen
-
-from visualize import build_cube_values, point_to_plane_residual
+from symforce.codegen import (
+    CppConfig,
+    Codegen,
+    values_codegen,
+    CodegenConfig,
+    template_util,
+)
+from symforce.codegen.codegen_config import RenderTemplateConfig
 import numpy as np
 import sym
 from symforce import typing as T
 from symforce.values import Values
+from utils import build_cube_values
 
 import re
 import shutil
 import textwrap
 
-NUM_POINTS_PER_FACE = 20
+NUM_POINTS_PER_FACE = 1000
 NUM_CORRESPONDENCES = NUM_POINTS_PER_FACE * 6
 
 
-def build_residual(num_correspondences, values: Values) -> Values:
+def point_to_plane_residual(
+    world_T_lidar: sf.Pose3,
+    point_lidar: sf.V3,
+    centroid_world: sf.V3,
+    normal_world: sf.V3,
+) -> sf.V3:
+
+    estimated_position = world_T_lidar * point_lidar
+    v = estimated_position - centroid_world
+
+    d_pred = normal_world.T * v
+
+    return d_pred
+
+
+def point_to_plane_sum_residual(
+    world_T_lidar: sf.Pose3,
+    points: T.List[sf.V3],
+    centroids: T.List[sf.V3],
+    normals: T.List[sf.V3],
+) -> sf.V1:
     residuals = []
-    for i in range(num_correspondences):
+    for i in range(points.shape[0]):
         residuals.append(
-            sf.V1(
-                point_to_plane_residual(
-                    values.attr.world_T_lidar,
-                    values.attr.points[i],
-                    values.attr.centroids[i],
-                    values.attr.normals[i],
-                )
+            point_to_plane_residual(
+                world_T_lidar,
+                points[i, :].T,
+                centroids[i, :].T,
+                normals[i, :].T,
             )
         )
-    return sf.Matrix.block_matrix([[residual] for residual in residuals])
+    return sf.Matrix(residuals)
+
+
+def build_sum_residual(values: Values) -> Values:
+    return sf.Matrix(
+        point_to_plane_sum_residual(
+            values.attr.world_T_lidar,
+            values.attr.points,
+            values.attr.centroids,
+            values.attr.normals,
+        )
+    )
 
 
 def build_codegen_object(config: T.Optional[CodegenConfig] = None) -> Codegen:
@@ -64,7 +96,7 @@ def build_codegen_object(config: T.Optional[CodegenConfig] = None) -> Codegen:
 
     values = Values(**{key: symbolic(key, v) for key, v in values.items_recursive()})
 
-    residual = build_residual(NUM_CORRESPONDENCES, values)
+    residual = build_sum_residual(values)
 
     flat_keys = {key: re.sub(r"[\.\[\]]+", "_", key) for key in values.keys_recursive()}
 
@@ -134,8 +166,9 @@ def generate_point_to_plane_residual_code(
 
 def generate(output_dir: Path) -> None:
     generate_point_to_plane_residual_code(output_dir)
+    values = build_cube_values(NUM_POINTS_PER_FACE)
     values_codegen.generate_values_keys(
-        build_cube_values(NUM_POINTS_PER_FACE),
+        values,
         output_dir,
         config=CppConfig(),
         skip_directory_nesting=True,

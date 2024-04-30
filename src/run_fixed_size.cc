@@ -26,22 +26,11 @@ namespace ICP
     {
         std::vector<sym::Key> factor_keys;
 
-        for (int i = 0; i < kNumPoints; i++)
-        {
-            factor_keys.push_back(sym::Keys::POINTS.WithSuper(i));
-        }
-
-        for (int i = 0; i < kNumPoints; i++)
-        {
-            factor_keys.push_back(sym::Keys::CENTROIDS.WithSuper(i));
-        }
-        for (int i = 0; i < kNumPoints; i++)
-        {
-            factor_keys.push_back(sym::Keys::NORMALS.WithSuper(i));
-        }
-
         for (int i = 0; i < kNumPoses; i++)
         {
+            factor_keys.push_back(sym::Keys::POINTS.WithSuper(i));
+            factor_keys.push_back(sym::Keys::CENTROIDS.WithSuper(i));
+            factor_keys.push_back(sym::Keys::NORMALS.WithSuper(i));
             factor_keys.push_back(sym::Keys::WORLD_T_LIDAR.WithSuper(i));
         }
 
@@ -58,11 +47,13 @@ namespace ICP
 
     void RunFixed()
     {
-        const int kNumPointsPerFace = 20; // for each face, 6 faces on a cube
+        const int kNumPointsPerFace = 1000; // for each face, 6 faces on a cube
         const int kNumPoints = kNumPointsPerFace * 6;
         const int kNumPoses = 1;
 
-        sym::Valuesd values = build_cube_values(kNumPointsPerFace);
+        sym::Valuesd values = build_fixed_values(kNumPointsPerFace);
+        spdlog::info("values: {}", values);
+
         const std::vector<sym::Factor<double>>
             factors = {BuildFixedFactor(kNumPoses, kNumPoints)};
 
@@ -96,7 +87,7 @@ namespace ICP
         spdlog::info("Final pose: {}", values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)));
 
         spdlog::info("Status: {}", stats.status);
-        visualize(values, kNumPoints);
+        visualize_fixed(values, kNumPoints);
         // viewer->spinOnce(5000);
     }
 

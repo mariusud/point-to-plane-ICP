@@ -44,11 +44,11 @@ namespace ICP
 
     void RunDynamic()
     {
-        const int kNumPointsPerFace = 20;             // for each face, 6 faces on a cube
+        const int kNumPointsPerFace = 1000;           // for each face, 6 faces on a cube
         const int kNumPoints = kNumPointsPerFace * 6; // kNumPointsPerFace * 6;
         const int kNumPoses = 1;
 
-        sym::Valuesd values = build_cube_values(kNumPointsPerFace);
+        sym::Valuesd values = build_dynamic_values(kNumPointsPerFace);
         const std::vector<sym::Factord> factors = BuildDynamicFactors<double>(kNumPoints);
 
         sym::optimizer_params_t params = sym::DefaultOptimizerParams();
@@ -80,7 +80,7 @@ namespace ICP
         spdlog::info("Final pose: {}", values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)));
 
         spdlog::info("Status: {}", stats.status);
-        visualize(values, kNumPoints);
+        visualize_dynamic(values, kNumPoints);
     }
 }
 

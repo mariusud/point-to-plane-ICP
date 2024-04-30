@@ -5,13 +5,13 @@
 #include "../gen/keys.h"
 #include "./common.h"
 
-void visualize_values(pcl::visualization::PCLVisualizer::Ptr &viewer, const sym::Values<double> &values, int kNumPoints)
+void visualize_dynamic_values(pcl::visualization::PCLVisualizer::Ptr &viewer, const sym::Values<double> &values, int kNumPoints)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr normals_cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
 
-    sym::Pose3d lidar_T_world = values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0)).Inverse();
+    sym::Pose3d lidar_T_world = values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0));
 
     for (int i = 0; i < kNumPoints; ++i)
     {
@@ -31,6 +31,51 @@ void visualize_values(pcl::visualization::PCLVisualizer::Ptr &viewer, const sym:
         normals_cloud->points.push_back(normal_point);
 
         Eigen::Vector3d normal = values.At<Eigen::Vector3d>(sym::Keys::NORMALS.WithSuper(i));
+        pcl::Normal pcl_normal;
+        pcl_normal.normal_x = normal.x();
+        pcl_normal.normal_y = normal.y();
+        pcl_normal.normal_z = normal.z();
+        normals->points.push_back(pcl_normal);
+    }
+
+    viewer->addPointCloud<pcl::PointXYZ>(cloud, "points");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 1.0, "points");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "points");
+
+    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(normals_cloud, normals, 1, 0.1, "normals");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "normals");
+}
+
+void visualize_fixed_values(pcl::visualization::PCLVisualizer::Ptr &viewer, const sym::Values<double> &values, int kNumPoints)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr normals_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+
+    sym::Pose3d lidar_T_world = values.At<sym::Pose3d>(sym::Keys::WORLD_T_LIDAR.WithSuper(0));
+
+    Eigen::MatrixXd points = values.At<Eigen::Matrix<double, 6000, 3>>(sym::Keys::POINTS.WithSuper(0));
+    Eigen::MatrixXd centroids = values.At<Eigen::Matrix<double, 6000, 3>>(sym::Keys::CENTROIDS.WithSuper(0));
+    Eigen::MatrixXd normals_mat = values.At<Eigen::Matrix<double, 6000, 3>>(sym::Keys::NORMALS.WithSuper(0));
+
+    for (int i = 0; i < kNumPoints; ++i)
+    {
+        Eigen::Vector3d point = points.row(i).transpose();
+        Eigen::Vector3d transformed_point = lidar_T_world.Compose(point);
+
+        pcl::PointXYZ pcl_point;
+        pcl_point.x = transformed_point.x();
+        pcl_point.y = transformed_point.y();
+        pcl_point.z = transformed_point.z();
+        cloud->points.push_back(pcl_point);
+
+        pcl::PointXYZ normal_point;
+        normal_point.x = point.x();
+        normal_point.y = point.y();
+        normal_point.z = point.z();
+        normals_cloud->points.push_back(normal_point);
+
+        Eigen::Vector3d normal = normals_mat.row(i).transpose();
         pcl::Normal pcl_normal;
         pcl_normal.normal_x = normal.x();
         pcl_normal.normal_y = normal.y();
@@ -71,14 +116,26 @@ void visualize_cube_faces(pcl::visualization::PCLVisualizer::Ptr &viewer)
     }
 }
 
-void visualize(const sym::Values<double> &values, int kNumPoints)
+void visualize_dynamic(const sym::Values<double> &values, int kNumPoints)
 {
     pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
     viewer->setBackgroundColor(0, 0, 0);
     viewer->initCameraParameters();
 
     visualize_cube_faces(viewer);
-    visualize_values(viewer, values, kNumPoints);
+    visualize_dynamic_values(viewer, values, kNumPoints);
+
+    viewer->spinOnce(5000);
+}
+
+void visualize_fixed(const sym::Values<double> &values, int kNumPoints)
+{
+    pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+    viewer->setBackgroundColor(0, 0, 0);
+    viewer->initCameraParameters();
+
+    visualize_cube_faces(viewer);
+    visualize_fixed_values(viewer, values, kNumPoints);
 
     viewer->spinOnce(5000);
 }
